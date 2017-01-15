@@ -52,4 +52,4 @@ def chat_client(host, port):
 
 
 if __name__ == "__main__":
-    sys.exit(chat_client("10.10.65.177", 9090))
+    sys.exit(chat_client("localhost", 9090))
