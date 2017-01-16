@@ -7,7 +7,8 @@ import importlib
 
 DATA_LEN = 1024
 
-def chat_client(host, port):
+
+def client(host, port):
     # if (len(sys.argv) < 3):
     #     print('Usage : python chat_client.py hostname port')
     #     sys.exit()
@@ -26,11 +27,11 @@ def chat_client(host, port):
         sys.exit()
 
     print('Connected to remote host. You can start sending messages')
-    sys.stdout.write('[Me] ')
+    sys.stdout.write('> ')
     sys.stdout.flush()
 
     flag = True
-    filepath = ''
+    cmd = ''
     while 1:
         socket_list = [s]
 
@@ -41,23 +42,27 @@ def chat_client(host, port):
             if sock == s:
                 # incoming message from remote server
                 if flag:
-                    data = sock.recv(DATA_LEN).decode() 
-                    path = './module/' + data
-                    filepath = data[:-3]
+                    cmd = sock.recv(DATA_LEN).decode()
+                    cmd = cmd.split(' ')
+                    path = './module/' + cmd[0] + '.py'
                     flag = False
                     fin = open(path, 'w')
                     break
-        
+
                 data = sock.recv(DATA_LEN).decode()
                 fin.write(data)
                 fin.close()
 
-                i = importlib.import_module('module.'+filepath)
-                ret = i.run(10)
-                print(ret)
+                i = importlib.import_module('module.' + cmd[0])
+                list_para = cmd[1:]
+                ret = i.run(list_para)
+                print('the result of run: %s\n' % ret)
                 sock.sendall(str(ret).encode())
-
+            # else:
+            #     cmd_str = sys.stdin.readline()
+            #     sys.stdout.write('> ')
+            #     sys.stdout.flush()
 
 
 if __name__ == "__main__":
-    sys.exit(chat_client("localhost", 9090))
+    sys.exit(client("localhost", 9090))

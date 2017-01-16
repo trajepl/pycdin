@@ -9,9 +9,10 @@ SOCKET_LIST = []
 SOCKET_NUM = 10
 RECV_BUFFER = 4096
 PORT = 9090
+RET = {}
 
 
-def chat_server():
+def server():
     # AF_INET -> IPV4(MOST OF THE INTERNET) | SOCK_STREAM -> TCP SOCK_DGRAM -> UDP
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -33,18 +34,21 @@ def chat_server():
             if sock == server_socket:
                 sockfd, addr = server_socket.accept()
                 SOCKET_LIST.append(sockfd)
-                print("> Client (%s, %s) connected" % addr)
-                module_name = input('> (select module inject) ')
+                print("> (%s, %s) connected" % addr)
+                module_name = input('> (select module inject and the params) ')
                 module_inject(server_socket, sockfd, module_name)
             else:
                 try:
                     data = sock.recv(RECV_BUFFER)
                     data = data.decode()
-                    print('> result is: ' + data)
-                    if data:
-                        print('> [' + sock.getpeername() + ']:' + data)
+                    if len(data) != 0:
+                        print('> result is %s' % data)
+                    else:
+                        print('> Client (%s, %s) closed' % addr)
+                        SOCKET_LIST.remove(sock)
                 except:
-                    pass
+                    print('> Client (%s, %s) closed' % addr)
+                    SOCKET_LIST.remove(sock)
 
     server_socket.close()
 
@@ -52,10 +56,9 @@ def chat_server():
 # module_inject chat messages to all connected clients
 def module_inject(server_socket, sock, module_name):
     # send module_name first
-    module_name = module_name + '.py'
     sock.sendall(module_name.encode())
-
-    path = '../module/' + module_name
+    filename = module_name.split(' ')[0] + '.py'
+    path = '../module/' + filename
     with open(path, 'r') as fout:
         tmp = ''
         for line in fout.readlines():
@@ -69,6 +72,6 @@ def module_inject(server_socket, sock, module_name):
 
 
 if __name__ == "__main__":
-    sys.exit(chat_server())
+    sys.exit(server())
 
 # :%s/goo/fd/gc  replace goo with fc. c:ask confirmation first
