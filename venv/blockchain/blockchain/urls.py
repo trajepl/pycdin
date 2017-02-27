@@ -20,5 +20,14 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+
+    url(r'^login$', views.login, name='login'),
+    url(r'^logout$', views.logout, name='logout'),
+
+    url(r'^userhandle$', views.userhandle, name='userhandle'),
+    url(r'^userdelete$', views.userdelete, name='userdelete'),
+    url(r'^useradd$', views.useradd, name='useradd'),
+    url(r'^modifyauth$', views.modifyauth, name='modifyauth'),
+
     url(r'^admin/', admin.site.urls),
 ]

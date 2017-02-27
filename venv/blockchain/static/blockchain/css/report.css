@@ -1,0 +1,56 @@
+h3{
+	font-family: 楷体;
+	font-size: 24px;
+	margin-top: 140px;
+}
+.page {
+	position: relative;
+	margin:0 auto;
+	width: 900px;
+	height:1260px;
+}
+.main-wrapper{
+	width: 970px;
+	position: relative;
+	margin:0 auto;
+}
+.cover-title {
+	text-align: center;
+}
+.cover-img{
+	margin-top: 100px;
+	margin-bottom: 50px;
+}
+.dept{
+	margin-top: 140px;
+	margin-bottom: 10px;
+}
+.flag-line {
+    background-color: blue;
+    width: 60%;
+    height: 7px;
+}
+.data{
+	margin-top: 10px;
+	/*margin-bottom: 140px;*/
+}
+.info{
+	width: 80%;
+	text-indent: 2em;
+	position: relative;
+	margin:0 auto;
+}
+.info h3{
+	font-size:24px;
+	line-height: 20px;
+	margin-top:20px;
+
+}
+.info p{
+	line-height: 24px;
+}
+#title{
+	font-family: 黑体;
+	font-size:28px;
+	margin-top: 140px;
+}

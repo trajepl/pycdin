@@ -1,0 +1,491 @@
+@charset "utf-8";
+/* ===============
+ * Css reset(重新定义Html元素)
+ * =============== */
+html, body, div, span, iframe,
+h1, h2, h3, h4, h5, h6, p, a, 
+del, dfn, em, img,
+small, strong,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, article, aside, canvas, 
+details, embed, figure, figcaption, footer, header, hgroup, 
+menu, nav, section, summary {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+tbody, tfoot, thead, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    font-family: "MicroSoft YaHei", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff;
+}
+ol, ul {
+    list-style: none outside none;
+}
+audio,canvas,video {
+    display:inline-block;
+    *display:inline;
+    *zoom:1;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+strong { 
+    font-weight: bold;
+}
+fieldset, img { 
+    border: medium none;
+}
+caption, th { 
+     text-align: left;
+}
+a:link, a:visited, a:active { 
+    color: #666;
+    text-decoration: none;
+}
+a:hover { 
+    color: #E4393C; 
+    text-decoration: underline;
+}
+* {
+    box-sizing:border-box;
+    -moz-box-sizing:border-box; /* Firefox */
+    -webkit-box-sizing:border-box; /* Safari */
+}
+/* ============================================
+ * 常用宽度、高度、边距、字体、颜色、布局等样式
+ * ============================================*/
+.w {
+     width: 100%
+}
+.h {
+    height: 100%;
+}
+.w-none {
+    width: 0;
+}
+.h-none {
+    height: 0;
+}
+.col-5 {
+    width: 50%;
+}
+.wrapper { 
+    width: 1100px; 
+    margin:0 auto;
+}
+.fl { 
+    float: left;
+}
+.fr { 
+    float: right;
+}
+.block { 
+    display: block;
+    zoom: 1;
+}
+.iblock{
+    display: inline-block;
+}
+.none { 
+    display: none;
+}
+.none-important {
+    display: none !important;
+}
+.b{
+    font-weight: bold;
+}
+.cl{
+    clear: left;
+}
+.cr{
+    clear: right;
+}
+.cb{
+    clear: both;
+}
+.pr {
+    position: relative;
+}
+.pa {
+    position: absolute;
+}
+.pf {
+    position: fixed;
+}
+.text-w{
+    color: #fff;
+}
+.text-b{
+    color:#000;
+}
+.text-l {
+    color: #aaa;
+}
+.bground-white {
+    background-color: #fff;
+}
+.bground-black {
+    background-color: #000;
+}
+.text-left{
+    text-align: left;
+}
+.text-center{
+    text-align: center;
+}
+.text-right{
+    text-align: right;
+}
+.ucase {
+    text-transform:uppercase;
+} /*文字大写*/
+.lcase{
+    text-transform:lowercase;
+} /*文字小写*/
+.capitalize{ 
+    text-transform:capitalize;
+} /*首字母大写*/
+.spliter {
+    border-left:1px solid #aaa;
+}
+.clearfix{
+    *zoom:1;
+}
+.clearfix:after { 
+   content:"";
+   display:table;
+   clear:both;
+}
+.box-shadow{
+    -webkit-box-shadow:0 1px 2px rgba(0,0,0,0.1);
+    box-shadow:0 1px 2px rgba(0,0,0,0.1);
+}
+.text-shadow{
+    -webkit-text-shadow:0 0 2px rgba(0,0,0,0.2);
+    text-shadow:0 0 2px rgba(0,0,0,0.2);
+}
+sub,sup
+.sub,.sup{
+    position:relative;
+    font-size:75%;
+    line-height:0;
+    vertical-align:baseline;
+}
+sup,.sup{
+    top:-0.5em;
+}
+sub,.sub{
+    bottom:-0.25em;
+}
+.mask {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: rgba(0,0,0,.4);
+    z-index: 99;  
+}
+.item-mask {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: rgba(255,255,255,.2);
+    z-index: 99;  
+}
+.error-info {
+    color: #F90B0B!important;
+    font-size: 12px;
+    font-family: "SimHei";
+}
+.one-line {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.opacity-none {
+    -webkit-opacity: 0;  
+    -moz-opacity: 0;  
+    -khtml-opacity: 0;  
+    opacity: 0;    
+    filter:alpha(opacity=0);  
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";  
+    filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=0);  
+}
+.file input {
+    position: absolute;
+    font-size: 100px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+}
+.file:hover {
+    background: #EF7C5A;
+    color: #fff;
+    border: 1px solid rgba(1,1,1,0);
+    text-decoration: none;
+}
+
+.page {
+    margin-top: 16px;
+}
+.page span {
+    margin: 0 4px;
+}
+.page a {
+    text-align: center;
+    border: 1px solid #1dccaa;
+    width: 26px;
+    height: 26px;
+    margin: 0 4px;
+    display: inline-block;
+    padding-top: 3px;
+}
+.center {
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    -webkit-transform: translate3D(-50%,-50%,0);
+    -ms-transform: translate3D(-50%,-50%,0);
+    -moz-transform: translate3D(-50%,-50%,0);
+    -o-transform: translate3D(-50%,-50%,0);
+    transform: translate3D(-50%,-50%,0);
+    z-index: 100;
+}
+
+/* ============================================
+ * 公共样式
+ * ============================================*/
+#nav-top {
+    position: fixed;
+    width: 100%;
+    z-index: 10;
+    height: 40px;
+    background-color: #444;
+    background-repeat: repeat-x;
+}
+#nav-top a {
+    color: #fff;
+    margin-left: 10px;
+}
+#nav-top a:hover {
+    color: #f00;
+}
+.system-name {
+    margin-top: 8px;
+    margin-left: 16px;
+    color: #fff;
+    font-size: 17px;
+    display: inline-block;
+}
+.system-name .system-name-logo {
+    margin-right: 5px;
+}
+#nav-top > div.fr {
+    max-width: 240px;
+    height: 40px;
+    margin-right: 25px;
+    color: #fff;
+    font-family: "Microsoft YaHei";
+    padding: 0 12px;
+    cursor: pointer;
+}
+.user-logout {
+    color: #d11;
+    margin: 0 5px;
+    font-family: "SimHei";
+}
+#nav-top .dropdown-toggle {
+    margin-top: 9px;
+}
+#nav-top .dropdown-toggle .fa-user {
+    font-size: 16px;
+    margin-right: 3px;
+}
+#nav-top .dropdown-toggle .user-name {
+    font-size: 14px;
+    margin-right: 6px;
+}
+#nav-top .drop-down {
+    width: 170px;
+    background-color: #2c3e50;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    border-radius: 6px;
+    z-index: 99;
+}
+/* ===============
+ * table样式设置
+ * =============== */
+table,
+.table {
+    width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+table th {
+    font-weight: 400;
+}
+.table thead th {
+    padding: 8px;
+    font-weight: bold;
+    font-size: 14px;
+}
+.table-round {
+    border-collapse: separate;
+    border-radius: 5px;
+}
+.table-border {
+    border: 1px solid #bbb;
+}
+.table-border thead th {
+    border-right: 1px solid #ddd;
+    border-bottom: 2px solid #ddd;
+}
+.table-border thead th:last-child {
+    border-right: none;
+}
+.table tbody td {
+    text-align: center;
+    padding: 8px;
+    font-size: 13px;
+    white-space: normal;
+    word-break: break-word;
+}
+.table-border td {
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+.table-border tr:last-child td {
+    border-bottom: none;
+}
+.table-border tbody tr td:last-child {
+    border-right: none;
+}
+.table tbody tr:hover {
+    background-color: #f4f4f4;
+}
+.table .parent {
+    background-color: #ededed;
+}
+.table .parent:hover {
+    background-color: #dfdfdf;
+}
+.table .child td:first-child {
+    padding-left: 30px;
+}
+.table .opration {
+    margin: 0 3px;
+}
+#user-list {
+    max-width: 1000px;
+    padding: 15px 40px;
+}
+.dataTables_filter input[type='search'] {
+    width: 140px;
+    height: 30px;
+    border: 1px solid #ddd;
+    padding: 0 2px; 
+    border-radius: 2px;
+    outline: none;
+    -webkit-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2sd ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+.dataTables_filter {
+    margin-bottom: 13px;
+}
+.dataTables_filter input[type='search']:focus {
+    border-color: #66afe9;
+    box-shadow: 0 0 10px #66afe9;
+    margin-top: 5px;
+}
+.dataTables_length select {
+    width: 52px;
+    height: 26px;
+    outline: none;
+}
+
+/*nav-list*/
+.nav-side {
+    background-color: #eee;
+}
+.nav-list-item a {
+    color: #555;
+    display: inline-block;
+    width: 100%;
+    height: 40px;
+    border-bottom: 1px solid #e6e6e6;
+    font-size: 14px;
+    line-height: 40px;
+}
+.nav-list-item a:hover {
+    cursor: pointer;
+    text-decoration: none;
+    color: #1abc9c;
+}
+.nav-list-item.active > a {
+    color: #1abc9c;
+}
+.sub-list li.active a {
+    color: #1abc9c;
+}
+.nav-list-item.active > a .fa-angle-right {
+    transform: rotate(90deg);
+    transition: all 251ms;
+    -moz-transition: all 251ms; 
+    -webkit-transition: all 251ms;
+    -o-transition: all 251ms;
+    -ms-transition: all 251ms;  
+}
+.nav-list-item .fa-angle-right {
+    font-size: 16px;
+    margin-top: 11px;
+    margin-right: 10px;
+}
+.nav-list-item > a {
+    padding-left: 10px; 
+}
+.sub-list li a {
+    color: #555;
+    padding-left: 26px;
+    /*background-color: #f8f8f8;*/
+}
+.nav-list-item > a i:first-child {
+    font-size: 16px;
+    margin: 0 5px;
+}

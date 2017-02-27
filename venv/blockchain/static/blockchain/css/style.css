@@ -1,0 +1,322 @@
+.navbar-nav>li>a {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    font-size: 17px;
+}
+
+.twopage{
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.twopage-text{
+    width: 100%;
+    text-align: center;
+}
+
+.twopage-text-h1{
+    letter-spacing: 10px;
+    margin-top: 100px;
+    margin-bottom: 100px;
+}
+
+.twopage .row{
+    margin-top: 20px;
+}
+
+.twopage-books{
+    float: left;
+
+    background: #ffffff;
+    padding: 10px 10px 50px 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.twopage-books a{
+    height: 250px;
+    float: left;
+
+    text-align: center;
+    position: relative;
+}
+
+.twopage-books img{
+    width: auto;
+    height: 250px;
+}
+
+.bookicon h3{
+    margin-top: 95px;
+    font-size: 30px;
+    color: #fff;
+}
+
+.bookicon h1{
+    font-size: 20px;
+    color: #a5d2cb;
+}
+
+.bookicon{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    color: #fff;
+    opacity: 0;
+}
+
+.bookicon:hover{
+    background: #122b40;
+    opacity: 0.7;
+    -webkit-border-radius: 125px;
+    -moz-border-radius: 125px;
+    border-radius: 125px;
+    -webkit-transition: opacity 0.7s;
+    -moz-transition: opacity 0.7s;
+    -ms-transition: opacity 0.7s;
+    -o-transition: opacity 0.7s;
+    transition: opacity 0.7s;
+}
+
+.twopagebtn{
+    width: 100%;
+    margin: 0% auto;
+    text-align: center;
+}
+
+.twopagebtn .btn-lg{
+    font-size: 25px;
+}
+
+#twopage-easy{
+    margin: 50px 0;
+    margin-bottom: 100px;
+}
+
+
+.carousel-inner .item img{
+    height: 750px;
+    width: 100%;
+}
+
+.carousel-inner .item .carousel-caption{
+    color: #ffffff;
+    text-shadow: 2px 2px 2px #080808;
+    margin-bottom: 100px;
+}
+
+
+.jumbotrontext{
+    margin-top: 200px;
+    text-align: center;
+    color: #ffffff;
+}
+
+/*login*/
+#admin-log-button > span {
+    width: 34px;
+    height: 34px;
+    line-height: 32px;
+    text-align: center;
+    display: inline-block;
+    position: relative;
+    margin-top: 10px;
+    margin-left: 15px;
+    border: 1px solid #aaa;
+    border-radius: 100%;
+    -webkit-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+#admin-log-button > span:hover {
+    font-size: 13px;
+    background-color: #bbb;
+    color: #fff;
+}
+#admin-log-button input[type='submit'] {
+    left: 0;
+    top: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+#admin-log-wrapper {
+    width: 330px;
+    height: 240px;
+    padding: 18px;
+    box-shadow: 0 0 20px rgb(180,180,180);
+    border-radius: 6px;
+    background-color: #fff;
+}
+.main-container {
+    position: relative;
+}
+.admin-log-title {
+    border-bottom: 1px solid #eee;
+    text-align: center;
+}
+.admin-log-title h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-family: "SimHei";
+}
+.admin-log-body .admin-user-info {
+    border: 1px solid #eee;
+    border-radius: 3px;
+    height: 34px;
+}
+.admin-user-info {
+    margin: 20px 0;
+}
+.admin-user-info span {
+    display: inline-block;
+    height: 100%;
+    width: 15%;
+    float: left;
+    text-align: center;
+    font-size: 17px;
+    padding-top: 7px;
+    border-right: 1px solid #eee;
+}
+.admin-user-info input[type='text'],
+.admin-user-info input[type='password'] {
+    height: 100%;
+    width: 82%;
+    float: left;
+    border: none;
+    font-family: "Microsoft YaHei";
+    outline: none;
+    padding-left: 5px;
+}
+
+#login-role {
+    padding: 0 20px;
+    margin-top: -10px;
+}
+
+#login-role span {
+    margin-right: 20px;
+    vertical-align: text-bottom;
+    margin-left: 10px;
+}
+#log-body div.fl {
+    width: 650px;
+    padding-left:50px;
+    margin-right: 80px;
+}
+#log-body div.fl img {
+    width: 600px;
+    height: auto;
+    max-height: 400px;
+}
+#login-info {
+    background: #fff;
+    width: 300px;
+    height: 345px;
+    float: left;
+    box-shadow: 2px 2px 7px rgba(210,210,210,.7);
+    padding: 10px 20px;
+}
+#login-info h3 {
+    font-size: 17px;
+    margin: 15px 0;
+    margin-bottom: 20px;
+}
+#login-info h4 {
+    font-size: 17px;
+    margin-bottom: 20px;
+}
+#login-role {
+    padding: 0 30px;
+    margin-top: -3px;
+}
+#login-role span {
+    margin-right: 40px;
+    vertical-align: text-bottom;
+    margin-left: 10px;
+
+}
+.user-info {
+    width: 250px;
+    height: 40px;
+    padding-left: 8px;
+    outline: none;
+}
+.userinfo-behind {
+    height: 20px;
+    margin-top: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#login-info input[type='submit'],
+#login-info input[type='reset'] {
+    width: 100px;
+    height: 40px;
+    border-right: 3px;
+    margin-top: 5px;
+    outline: none;
+    font-size: 16px;
+    font-family: "微软雅黑";
+    -webkit-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+#login-info input[type='submit'] {
+    background-color: #d5edf9;
+    color: #3D6F34;
+    border: none;
+    margin-right: 20px;
+    margin-left: 15px;
+}
+#login-info input[type='reset'] {
+    background-color: #F2EFEF;
+    border: 1px solid #ddd;
+}
+#login-info input[type='submit']:hover {
+    background-color: #67B4D6;
+    color: #fff;
+}
+#login-info input[type='reset']:hover {
+    background-color: rgb(218, 202, 202);
+    color: #fff;
+}
+
+
+.backicon a{
+    height: 60px;
+    position: relative;
+}
+
+.backicon img{
+    height: 60px;
+    width: auto;
+}
+
+.backshadow{
+    width: 100%;
+    height: 60px;
+    position: absolute;
+
+    left: -1.5px;
+    top: -20.3px;
+    color: #fff;
+    opacity: 0;
+}
+
+.backshadow:hover{
+    background: #bdb695;
+    opacity: 0.3;
+    -webkit-transition: opacity 0.7s;
+    -moz-transition: opacity 0.7s;
+    -ms-transition: opacity 0.7s;
+    -o-transition: opacity 0.7s;
+    transition: opacity 0.7s;
+}

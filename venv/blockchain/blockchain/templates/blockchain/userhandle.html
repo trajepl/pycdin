@@ -1,0 +1,84 @@
+<!DOCTYPE html>                                                                                                                                                                                                     
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="keywords" content="[keywords]" />
+    <meta name="description" content="[description]"/>
+    <meta http-equiv="Cache-Control" content="no-transform" /> 
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    {% load static %}
+    <title>User Manage</title>
+
+    <link rel="stylesheet" href="{% static '/blockchain/css/common.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/admin.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static '/common/DataTables-1.10.8/css/jquery.dataTables.css' %}">
+    <link rel="stylesheet" href="{% static '/common/font-awesome-4.5.0/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/style.css' %}">
+    <script type="text/javascript" src="{% static '/blockchain/plugins/jquery-1.11.2.js' %}"></script>
+
+</head>
+<body>
+	<div id="managers-list">
+		<table class="table table-border">
+			<thead>
+				<tr>
+					<th width="150" class="text-center">User</th>
+					<th width="150" class="text-center">Root</th>
+					<th width="200" class="text-center">Modify</th>
+				</tr>
+			</thead>
+			<tbody class="text-center">
+                {% for user in users %}
+					<tr>
+
+                        <td class="text-center">{{ user.id }}</td>
+                        {% if user.root %}
+                            <td class="text-center is-root" is-root="true" user-id="{{ user.id }}">
+                                <i class="fa fa-check">
+                            </td>
+                        {% else %}
+                            <td class="text-center is-root" is-root="false" user-id="{{ user.id }}"></td>
+                        {% endif %}
+                        <td>
+                            <a class="delete-button" user-id="{{ user.id }}" is-root="{{ user.root }}"><i class="fa fa-trash"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a class="add-button" user-id="{{ user.id }}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+						</td>
+					</tr>
+                {% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<div id="managers-addition" class="none">
+		<table id="managers-add-table" class="table table-border">
+			<tbody>
+				<tr id="userid">
+					<td>userid</td>
+                    <td id="managers-add-td1">
+                        <input type="text" name="id" placeholder="account_id" value="">
+                    </td>
+				</tr>
+				<tr id="passowrd">
+					<td>password</td>
+                    <td id="managers-add-td2">
+                        <input type="password" name="password" placeholder="password" value="">
+                    </td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="table-addition-submit">
+			<input type="button" value="submit" class="submit">
+			<input type="reset" value="cancle" class="reset">
+		</div>
+	</div>
+
+    <script charset="utf8" src="{% static '/common/DataTables-1.10.8/js/jquery.dataTables.js' %}"></script>
+    <script charset="utf8" src="{% static '/blockchain/script/user.js' %}"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta name="keywords" content="[keywords]" />
+	<meta name="description" content="[description]"/>
+	<meta http-equiv="Cache-Control" content="no-transform" /> 
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    {% load static %}
+	<title>Login</title>
+
+    <link rel="stylesheet" href="{% static '/blockchain/css/common.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/admin.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static '/common/DataTables-1.10.8/css/jquery.dataTables.css' %}">
+	<link rel="stylesheet" href="{% static '/common/font-awesome-4.5.0/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/style.css' %}">
+	<script type="text/javascript" src="{% static '/blockchain/plugins/jquery-1.11.2.js' %}"></script>
+
+</head>
+<body>
+<div id="wrapper-main">
+	<style>
+		body {
+			background-color: #f6f6f6;
+		}
+	</style>
+
+	<div style="padding: 60px;">
+		<h1 style="text-align: center; text-shadow: 2px 2px 0px #ffffff">BlockChain</h1>
+	</div>
+
+	<div id="admin-log-wrapper" class="center">
+		<div class="admin-log-title">
+			 <h2>Log in</h2>	
+		</div>
+        <form action="/login" method="post">
+			<div class="admin-log-body">
+				<div class="admin-user-info">
+					<span><i class=" fa fa-user-md"></i></span>
+					<input type="text" name="userid" placeholder="account id" value="">
+				</div>
+				<div class="admin-user-info">
+					<span><i class="fa fa-key"></i></span>
+					<input type="password" name="password" placeholder="password" value="">
+				</div>
+				<div id="admin-log-button">
+					<span class="fr">
+						<input class="opacity-none" type="submit">
+						<i class="fa fa-sign-in"></i>
+					</span>	
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+{% load static %}
+<script src="{% static '/blockchain/plugins/jquery.cookie.js' %}"></script>
+<script>
+	$(document).ready(function() {
+		$("input[type='submit']").click( function(e) {
+			var password = $("input[type='password']").val().trim();
+			var username = $("input[type='text']").val().trim();
+
+			if(username == '') {
+				alert("None account id！");
+				e.preventDefault();
+			}
+
+			if(password == '') {
+				alert("None password！");
+				e.preventDefault();
+			}
+		});	
+	});
+</script>
+</body>
+</html>
+
