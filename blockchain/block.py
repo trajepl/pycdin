@@ -12,11 +12,14 @@ DATA = 5
 PACK_FORMAT = 'LL64s64sI'
 
 class Block:
-    def __init__(self, data, prev_hash):
+    def __init__(self, data, prev_hash, *timestamp):
         self.magic_id = 0xDAB5BFFA
 
         # t = time.gmtime(timestamp) time.asctime(t)
-        self.timestamp = int(time.time())
+        if len(timestamp) == 0:
+            self.timestamp = int(time.time())
+        else:
+            self.timestamp = timestamp[0]
 
         self.prev_hash = prev_hash.encode()
         self.data = data.encode()
