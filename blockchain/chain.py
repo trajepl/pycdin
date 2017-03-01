@@ -38,7 +38,7 @@ class Chain:
 
                 block = list(struct.unpack(PACK_FORMAT, block_bytes))
                 data_len = block[LENGTH]
-                prev_hash = block[HASH_VALUE].decode()
+                prev_hash = block[PREV_HASH].decode()
 
                 # read block data
                 data_bytes = chain.read(data_len)
@@ -118,9 +118,9 @@ class Chain:
 
 if __name__ == '__main__':
     chain = Chain()
-    chain.create_first_block('trajep create first block.', 'blockchain')
+    # chain.create_first_block('trajep create first block.', 'blockchain')
 
-    # chain.add_chain( 'trajep create 2rd block.', 'blockchain')
+    chain.add_chain( 'trajep create 4th block.', 'blockchain')
 
     # chain.push_chain('trajep create 2rd block.', 'blockchain')
     # chain.push_chain('trajep create 3th block.', 'blockchain')
