@@ -92,14 +92,14 @@ class Chain:
         return block
 
 
-    def add_chain(self, data, fn):
+    def add_block(self, data, fn):
         block_prefix, index_item = self.last_block_prefix(fn)
         prev_hash = block_prefix[HASH_VALUE]
         block = Block(data, prev_hash)
         self.write_block(block, fn, 'ab')
 
         # update index file 'index.id'
-        len_block = block_prefix[LENGTH] + LEN_PRE_DATA
+        len_block = len(data) + LEN_PRE_DATA
         index_item[0] += 1
         index_item[1] += len_block
         self.update_index(index_item, 'index.id', 'ab')
@@ -120,12 +120,13 @@ if __name__ == '__main__':
     chain = Chain()
     # chain.create_first_block('trajep create first block.', 'blockchain')
 
-    chain.add_chain( 'trajep create 4th block.', 'blockchain')
+    chain.add_block( 'trajep create 10 block.', 'blockchain')
 
-    # chain.push_chain('trajep create 2rd block.', 'blockchain')
-    # chain.push_chain('trajep create 3th block.', 'blockchain')
 
     chain.read_chain('blockchain')
+
+    # chain.push_chain('trajep create 4th block.', 'blockchain')
+
     chain.print_chain()
     chain.print_index('index.id')
 
