@@ -1,6 +1,6 @@
 import struct
 from block import Block, LEN_PRE_DATA, \
-    PREV_HASH, HASH_VALUE, LENGTH, PACK_FORMAT
+    PREV_HASH, HASH_VALUE, LENGTH, PACK_FORMAT, TIMESTAMP
 
 ITEM_LEN = 16
 class Chain:
@@ -39,13 +39,14 @@ class Chain:
                 block = list(struct.unpack(PACK_FORMAT, block_bytes))
                 data_len = block[LENGTH]
                 prev_hash = block[PREV_HASH].decode()
+                timestamp = block[TIMESTAMP]
 
                 # read block data
                 data_bytes = chain.read(data_len)
                 data = struct.unpack(str(data_len) + 's', data_bytes)[0].decode()
 
                 block.append(data)
-                self.blockchain.append(Block(data, prev_hash))
+                self.blockchain.append(Block(data, prev_hash, timestamp))
 
     def print_chain(self):
         for block in self.blockchain:
@@ -87,7 +88,8 @@ class Chain:
     def push_chain(self, data, fn):
         block_prefix, index_item = self.last_block_prefix(fn)
         prev_hash = block_prefix[HASH_VALUE]
-        block = Block(data, prev_hash)
+        timestamp = block_prefix[TIMESTAMP]
+        block = Block(data, prev_hash, timestamp)
         self.blockchain.append(block)
         return block
 
@@ -120,8 +122,7 @@ if __name__ == '__main__':
     chain = Chain()
     # chain.create_first_block('trajep create first block.', 'blockchain')
 
-    chain.add_block( 'trajep create 10 block.', 'blockchain')
-
+    # chain.add_block( 'trajep create 10 block.', 'blockchain')
 
     chain.read_chain('blockchain')
 
