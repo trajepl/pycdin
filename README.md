@@ -15,8 +15,8 @@ we use python injection to implement ``BlockChain``.
 |  previous block hash |  64  |
 |  block hash |  64  |
 |  data length |  4  |
-|  timestamp |  data length  |
 |  sum |  148  |
+|  data |  data length  |
 
 ### chat/ | module-inject/ | module/
 Those modules contains some little programs to implement and test the ``module-inject`` among many computers by socket of python module. We also implement the simple ``ChatRoom`` program.
