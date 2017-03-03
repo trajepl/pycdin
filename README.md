@@ -1,5 +1,6 @@
 # pycdin (python code injection)
-tags: BlockChain Django
+
+``BlockChain`` ``Django``
 
 we use python injection to implement ``BlockChain``.
 
