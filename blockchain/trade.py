@@ -10,7 +10,7 @@ class Trade:
         self.SOCKET_LIST = []
         self.HOST_LIST = []
         self.RECV_BUFFER = 4096
-        self.PORT_SERVER = 9091
+        self.PORT_SERVER = 8081
         self.PORT_CLIENT = 9090
         self.MAX_LEN_CONN = 10
         self.DATA = []
@@ -31,6 +31,7 @@ class Trade:
         self.MAX_LEN_CONN = num
 
     def start_server(self):
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.HOST, self.PORT_SERVER))
         self.server_socket.listen(self.MAX_LEN_CONN)
 
@@ -45,32 +46,43 @@ class Trade:
         for host in self.HOST_LIST:
             host = host.split(' ')
             host[1] = int(host[1])
+            # host[0] == self.HOST
+            if host[1] == self.PORT_SERVER:
+                continue
 
+            print("$48 start_send: %s" % host)
             try:
                 self.client_socket.connect(tuple(host))
                 for item in self.DATA:
                     self.client_socket.send(str(item).encode())
             except Exception as e:
-                print(e)
-                sys.exit()
+                print('59: %s %s' % (e, host))
+            try:
+                check_code = self.client_socket.recv(self.RECV_BUFFER)
+                if self.check(check_code, self.client_socket):
+                    print('%s receives right info.' % host)
+                else:
+                    print('%s receives wrong info.' % host)
+            except Exception as e:
+                print('67: %s %s' % (e, host))
 
     def get_socket_list(self, fn):
         with open(fn, 'r') as socket_list:
             for line in socket_list.readlines():
                 self.HOST_LIST.append(line)
 
-    def check(self, check_code):
+    def check(self, check_code, sock):
         origin_data = ''
         for item in self.DATA:
             origin_data += item
 
-        hash_code = hashlib.sha256(origin_data).hexdigest().encode()
+        hash_code = hashlib.sha256(origin_data.encode()).hexdigest().encode()
 
         if hash_code == check_code:
-            self.server_socket.send(b'True')
+            sock.send(b'True')
             return True
         else:
-            self.server_socket.send(b'False')
+            sock.send(b'False')
             return False
 
     def receive(self, ):
@@ -83,28 +95,22 @@ class Trade:
                     self.SOCKET_LIST.append(sockfd)
                 else:
                     try:
-                        data = sock.recv(self.RECV_BUFFER)
-                        data = data.decode()
-                        check_ret = self.check(data)
+                        data_bytes = sock.recv(self.RECV_BUFFER)
+                        data = data_bytes.decode()
+                        check_code = hashlib.sha256(data_bytes).hexdigest().encode()
 
-                        if len(data) != 0 and check_ret:
-                            print('> [%s@ %s] receives right info.' % addr)
-                        elif not check_ret:
-                            print('> [%s@ %s] receives wrong info. Resending...' % addr)
-                            self.server_socket.send(self.DATA[0].encode())
+                        if len(data) != 0:
+                            sock.send(check_code)
+                            print(check_code)
+                            print('> [%s@ %s] receives info.' % addr)
                         else:
                             print('> [%s@ %s] is offline.' % addr)
-                            self.SOCKET_LIST.remove(sock)
-                    except:
-                        print('> [%s@ %s] is offline.' % addr)
+                        self.SOCKET_LIST.remove(sock)
+                    except Exception as e:
+                        print(e)
                         self.SOCKET_LIST.remove(sock)
         self.server_socket.close()
-
 if __name__ == '__main__':
     trade = Trade()
     trade.start_server()
-    trade.set_host('127.0.0.1', 9090, 8090)
-    data = input('> ')
-
-    trade.set_data(data)
-    trade.start_send()
+    trade.receive()
