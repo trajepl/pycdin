@@ -16,13 +16,19 @@ class Trade:
         self.DATA = []
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.start_server()
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.get_socket_list('hostlist')
-        self.start_send()
 
     def set_data(self, data):
         self.DATA.append(data)
+
+    def set_host(self, host, port_server, port_client):
+        self.HOST = host
+        self.PORT_SERVER = port_server
+        self.PORT_CLIENT = port_client
+
+    def set_max_len_conn(self, num):
+        self.MAX_LEN_CONN = num
 
     def start_server(self):
         self.server_socket.bind((self.HOST, self.PORT_SERVER))
@@ -41,13 +47,12 @@ class Trade:
             host[1] = int(host[1])
 
             try:
-                self.client_socket.connect(host)
+                self.client_socket.connect(tuple(host))
                 for item in self.DATA:
                     self.client_socket.send(str(item).encode())
             except Exception as e:
                 print(e)
                 sys.exit()
-
 
     def get_socket_list(self, fn):
         with open(fn, 'r') as socket_list:
@@ -97,10 +102,9 @@ class Trade:
 
 if __name__ == '__main__':
     trade = Trade()
-    data = 'test'
+    trade.start_server()
+    trade.set_host('127.0.0.1', 9090, 8090)
+    data = input('> ')
+
     trade.set_data(data)
     trade.start_send()
-
-
-
-
