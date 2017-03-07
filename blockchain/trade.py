@@ -4,6 +4,9 @@ import socket
 import select
 import hashlib
 
+from threading import Thread
+
+
 class Trade:
     def __init__(self):
         self.HOST = ''
@@ -20,7 +23,8 @@ class Trade:
         self.get_socket_list('hostlist')
 
     def set_data(self, data):
-        self.DATA.append(data)
+        if len(data) != 0:
+            self.DATA.append(data+' | ')
 
     def set_host(self, host, port_server, port_client):
         self.HOST = host
@@ -50,21 +54,24 @@ class Trade:
             if host[1] == self.PORT_SERVER:
                 continue
 
-            print("$48 start_send: %s" % host)
+            print("$ [send to]: %s" % host)
             try:
                 self.client_socket.connect(tuple(host))
+                data_item = ''
                 for item in self.DATA:
-                    self.client_socket.send(str(item).encode())
+                    data_item += item
+                self.client_socket.send(data_item.encode())
             except Exception as e:
-                print('59: %s %s' % (e, host))
+                print('! line 59: %s %s' % (e, host))
             try:
                 check_code = self.client_socket.recv(self.RECV_BUFFER)
                 if self.check(check_code, self.client_socket):
-                    print('%s receives right info.' % host)
+                    print('> [recv] right info: %s.' % host)
                 else:
-                    print('%s receives wrong info.' % host)
+                    print('> [recv] wrong info: %s.' % host)
+                    print('> [resend] to %s.' % host)
             except Exception as e:
-                print('67: %s %s' % (e, host))
+                print('! line 67: %s %s' % (e, host))
 
     def get_socket_list(self, fn):
         with open(fn, 'r') as socket_list:
@@ -101,16 +108,34 @@ class Trade:
 
                         if len(data) != 0:
                             sock.send(check_code)
-                            print(check_code)
-                            print('> [%s@ %s] receives info.' % addr)
+                            print('> [recv](%s@%s) receives info.' % addr)
+                            print('> ' + data + ':' + check_code.decode())
                         else:
-                            print('> [%s@ %s] is offline.' % addr)
+                            print('> [recv](%s@ %s) is offline.' % addr)
                         self.SOCKET_LIST.remove(sock)
                     except Exception as e:
                         print(e)
                         self.SOCKET_LIST.remove(sock)
         self.server_socket.close()
-if __name__ == '__main__':
+
+    def send(self):
+        while True:
+            self.DATA = []
+            data = ''
+            while data != '#':
+                self.set_data(data)
+                data = input("> [send](exit with '#'):")
+            print('> [sending] %s' % self.DATA)
+            self.start_send()
+
+
+def main():
     trade = Trade()
     trade.start_server()
-    trade.receive()
+    server = Thread(target=trade.receive)
+    server.start()
+    client = Thread(target=trade.send)
+    client.start()
+
+if __name__ == '__main__':
+    main()
