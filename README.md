@@ -23,10 +23,10 @@ we use python injection to implement ``BlockChain``.
 Those modules contains some little programs to implement and test the ``module-inject`` among many computers by socket of python module. We also implement the simple ``ChatRoom`` program.
 
 ### venv/
-In this component, we use the [nginx + uwsgi + python3 + django + virtualenv](http://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html) to build the browser-server by which we could operate the blockchains and implement the ``DATA STORAGE``, ``DATA DISTRIBUTION``, ``CONSENSUS MECHANISM``, ``DEFENCE``, ``WRITE ACCESS`` and so on. *Now, we have not complete those function.*
+In this component, we use the [nginx + uwsgi + python3 + django + virtualenv](http://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html) to build the browser-server by which we could operate the blockchains and implement the ``DATA STORAGE``, ``DATA DISTRIBUTION``, ``CONSENSUS MECHANISM``, ``DEFENCE``, ``WRITE ACCESS`` and so on. *Now, we have not completed those function.*
 **0.0**
   
-      Here is one example to explain the struct of blockchain:
+Here is one example to explain the struct of blockchain:
 *Note that: there are some duplicate blocks we add into blockchain on purpose.*
 ```
     Magic id            : 0xdab5bffa
