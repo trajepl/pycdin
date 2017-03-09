@@ -20,7 +20,7 @@ class Trade:
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.get_socket_list('hostlist')
+        self.get_socket_list('host/hostlist')
 
     def set_data(self, data):
         if len(data) != 0:
