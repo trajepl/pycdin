@@ -137,5 +137,13 @@ def main():
     client = Thread(target=trade.send)
     client.start()
 
+def mul_thread(fn):
+    with open(fn, 'r') as host_in:
+        for line in host_in.readlines():
+            Thread(target=main).start()
+            
+
+
+
 if __name__ == '__main__':
     main()
