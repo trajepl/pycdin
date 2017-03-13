@@ -1,4 +1,10 @@
 # generate graph (node :n edge:e)
+
+#
+# linux cmd return ports which are used.
+# netstat -ntl |grep -v Active| grep -v Proto|awk '{print $4}'|awk -F: '{print $NF}'
+# 
+
 import random
 
 
@@ -90,7 +96,7 @@ def gen_connected_graph(n):
 
 
 
-def gen_host_file(n):
+def gen_host_file(n, dir_port):
     id = 0
     filename = 'hostlist'
     network = gen_connected_graph(n)
