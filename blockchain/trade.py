@@ -8,13 +8,13 @@ from threading import Thread
 
 
 class Trade:
-    def __init__(self):
-        self.HOST = ''
+    def __init__(self, host, port_server):
+        self.HOST = host
         self.SOCKET_LIST = []
         self.HOST_LIST = []
         self.RECV_BUFFER = 4096
-        self.PORT_SERVER = 8081
-        self.PORT_CLIENT = 9090
+        # self.PORT_SERVER = 8081
+        self.PORT_SERVER = port_server
         self.MAX_LEN_CONN = 10
         self.DATA = []
 
@@ -26,10 +26,9 @@ class Trade:
         if len(data) != 0:
             self.DATA.append(data+' | ')
 
-    def set_host(self, host, port_server, port_client):
+    def set_host(self, host, port_server):
         self.HOST = host
         self.PORT_SERVER = port_server
-        self.PORT_CLIENT = port_client
 
     def set_max_len_conn(self, num):
         self.MAX_LEN_CONN = num
@@ -49,8 +48,11 @@ class Trade:
 
         for host in self.HOST_LIST:
             host = host.split(' ')
+
+            # cluster debug
             host[1] = int(host[1])
             # host[0] == self.HOST
+
             if host[1] == self.PORT_SERVER:
                 continue
 
@@ -129,21 +131,26 @@ class Trade:
             self.start_send()
 
 
-def main():
-    trade = Trade()
-    trade.start_server()
-    server = Thread(target=trade.receive)
-    server.start()
-    client = Thread(target=trade.send)
-    client.start()
+def start_server():
+    while True:
+        if len(sys.argv) > 0:
+            host = socket.gethostbyname(socket.gethostname())
+            trade = Trade(host, sys.argv[0])
+            trade.start_server()
+            server = Thread(target=trade.receive)
+            server.start()
+            client = Thread(target=trade.send)
+            client.start()
+            break
+        else:
+            print("Server port needed.")
 
-def mul_thread(fn):
-    with open(fn, 'r') as host_in:
-        for line in host_in.readlines():
-            Thread(target=main).start()
-            
 
+# def mul_thread(fn):
+#     with open(fn, 'r') as host_in:
+#         for line in host_in.readlines():
+#             Thread(target=main).start()
 
 
 if __name__ == '__main__':
-    main()
+    start_server()

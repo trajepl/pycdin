@@ -3,8 +3,7 @@
 #
 # linux cmd return ports which are used.
 # netstat -ntl |grep -v Active| grep -v Proto|awk '{print $4}'|awk -F: '{print $NF}'
-# 
-
+#
 import random
 
 
@@ -16,7 +15,7 @@ def create_graph(n):
             if i == j:
                 node_list[i].append(0)
                 continue
-            node_list[i].append(random.randint(1, n+1))
+            node_list[i].append(random.randint(1, n + 1))
     for i in range(n):
         for j in range(i):
             node_list[i][j] = node_list[j][i]
@@ -24,7 +23,7 @@ def create_graph(n):
 
 
 def min_edge(close_edge, n, key):
-    tmp = n*n
+    tmp = n * n
     ret = 0
     for i in range(n):
         if i in key:
@@ -79,6 +78,10 @@ def prim(node_list):
 
 
 def gen_connected_graph(n):
+    """
+    :param n: number of node in graph.
+    :return:
+    """
     graph = create_graph(n)
     ret_graph = prim(graph)
     print(ret_graph)
@@ -86,7 +89,7 @@ def gen_connected_graph(n):
     num_edge_random = random.randint(0, int(node_num * 0.8))
 
     for i in range(num_edge_random):
-        id_edge = random.randint(0, (node_num-1) * 2)
+        id_edge = random.randint(0, (node_num - 1) * 2)
         x = id_edge // node_num
         y = id_edge % node_num
         if ret_graph[x][y] == '*' and ret_graph[y][x]:
@@ -95,19 +98,55 @@ def gen_connected_graph(n):
     return ret_graph
 
 
+def host_maps(n, host_list):
+    """
+    :param n: number of root.
+    :param host_list: cluster pc IP LIST.
+    :return: graph(randomly generate connection graph) maps(hosts+IP).
+    """
+    if len(host_list) > MAX_PORT - MIN_PORT:
+        print("Too much nodes.")
+    else:
+        maps = []
+        count = 0
+        for host in host_list:
+            for port in range(MIN_PORT, MIN_PORT + n//len(host_list)):
+                host_port = [host, str(port)]
+                maps.append(host_port)
+                count += 1
+    print(maps)
+    random.shuffle(maps)
+    graph = gen_connected_graph(n)
+    return graph, maps
 
-def gen_host_file(n, dir_port):
-    id = 0
-    filename = 'hostlist'
-    network = gen_connected_graph(n)
 
-    for hosts in network:
-        id += 1
-        with open(filename+str(id), 'w') as host_out:
-            host_out.write()
+def host_list(n, host_list):
+    """
+    :param n: number of root.
+    :param host_list: cluster pc IP LIST.
+    :return: [[host port|*m] * n]  every item in return res means the address which should be send msg.
+    """
+    res = []
+    graph, maps = host_maps(n, host_list)
+
+    for i in range(n):
+        s = ""
+        for j in range(n):
+            if graph[i][j] == 1:
+                for item in maps[j]:
+                    s += item
+                    s += ' '
+                s = s[:-1]
+                s += '|'
+
+        res.append(s)
+    return res
 
 
-
+MIN_PORT = 9000
+MAX_PORT = 9999
 
 if __name__ == '__main__':
-    gen_connected_graph(4)
+    host = ['1', '2', '3']
+    res = host_list(30, host)
+    print(res)
