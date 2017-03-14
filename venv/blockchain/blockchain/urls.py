@@ -36,6 +36,9 @@ urlpatterns = [
     url(r'^hostadd$', views.hostadd, name='hostadd'),
     url(r'^hostmodify$', views.hostmodify, name='hostmodify'),
 
+    # build network
+    url(r'^build$', views.build, name='build'),
+
     # auth manage
     url(r'^admin/', admin.site.urls),
 ]

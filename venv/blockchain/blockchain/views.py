@@ -226,3 +226,12 @@ def hostquery(request):
         'hosts'    : host_list,
     }
     return render(request, "blockchain/hostquery.html", content)
+
+@active
+def build(request):
+    num_node = request.POST['num_node']
+
+    content = {
+        'num_node'    : num_node,
+    }
+    return render(request, "blockchain/simulation.html", content)

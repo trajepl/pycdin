@@ -106,8 +106,16 @@
 		</div>
 		<div class="page-content">
 			<link rel="stylesheet" href="{% static '/common/DataTables-1.10.8/css/jquery.dataTables.css' %}">
-			<div id="managers-list">
-			</div>
+            <h2>&nbsp;&nbsp;&nbsp;<small>Set the number of node in network of blockchain simulation</small></h2>
+            <br/><br/>
+            <form class="form-horizontal" role="form" action="/build" method="post">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Number of Node: </label>
+                <div class="col-xs-2">
+                    <input class="form-control" type="text" placeholder="10" name="num_node"/>
+                </div>
+            </div>
+            </form>
             <script charset="utf8" src="{% static '/common/DataTables-1.10.8/js/jquery.dataTables.js' %}"></script>
             <script src="{% static '/blockchain/script/resShow.js' %}"></script>
 		</div>
