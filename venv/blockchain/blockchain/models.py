@@ -9,6 +9,8 @@ class Auth(models.Model):
         return str(self.id + self.password)
 
 
-class Remote(models.Model):
+class Host(models.Model):
+    host = models.CharField(max_length = 100)
+    
     def __str__(self):
         return self.host

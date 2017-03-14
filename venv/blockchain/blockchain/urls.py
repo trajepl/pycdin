@@ -24,10 +24,18 @@ urlpatterns = [
     url(r'^login$', views.login, name='login'),
     url(r'^logout$', views.logout, name='logout'),
 
+    # user manage
     url(r'^userhandle$', views.userhandle, name='userhandle'),
     url(r'^userdelete$', views.userdelete, name='userdelete'),
     url(r'^useradd$', views.useradd, name='useradd'),
     url(r'^modifyauth$', views.modifyauth, name='modifyauth'),
 
+    # host manage
+    url(r'^hostquery$', views.hostquery, name='hostquery'),
+    url(r'^hostdelete$', views.hostdelete, name='hostdelete'),
+    url(r'^hostadd$', views.hostadd, name='hostadd'),
+    url(r'^hostmodify$', views.hostmodify, name='hostmodify'),
+
+    # auth manage
     url(r'^admin/', admin.site.urls),
 ]

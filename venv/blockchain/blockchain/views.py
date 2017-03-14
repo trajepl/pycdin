@@ -155,3 +155,74 @@ def modifyauth(request):
             }
     return JsonResponse(data)
 
+@active
+def hostadd(request):
+    host = request.POST['host']
+
+    with connection.cursor() as cursor:
+        cursor.execute("insert into blockchain_host values(%s)", [host])
+        cursor.execute("commit")
+
+        data = {
+            'status'    : 1,
+            'content'   : '',
+        }
+    return JsonResponse(data)
+
+@active
+def hostdelete(request):
+    host = request.POST['host']   
+    with connection.cursor() as cursor:
+        cursor.execute("delete from blockchain_host where host = %s", [host])
+        cursor.execute("commit")
+
+        data = {
+            'status'    : 1, 
+            'content'   : '',
+        }
+    return JsonResponse(data)
+
+@active
+def hostmodify(request):
+    origin_host = request.POST['origin_host']
+    modify_host = request.POST['modify_host']
+
+    with connection.cursor() as cursor:
+        cursor.execute("select host from blockchain_host where host=%s", [modify_host])
+        host_duplicate = cursor.fetchall();
+        print(host_duplicate)
+        if len(host_duplicate) != 0:
+            data = {
+                'status'    : 0,
+                'content'   : 'host duplicate.',
+            }
+        else:
+            cursor.execute("update blockchain_host set host=%s where host=%s", [modify_host, origin_host])
+            cursor.execute('commit')
+
+            data = {
+                'status'    : 1,
+                'content'   : '',
+            }
+
+    return JsonResponse(data)
+
+@active   
+def hostquery(request):
+    with connection.cursor() as cursor:
+        cursor.execute("select * from blockchain_host")
+        hosts = cursor.fetchall()
+
+    # host_list = BCModels.Host.objects.raw("select * from blockchain_host")
+    # hosts = []
+
+    # for ip in host_list:
+    #     hosts.append(ip.host)
+    host_list = []
+    for host in hosts:
+        host_list.append(host[0])
+
+    content = {
+        'hosts'    : host_list,
+    }
+    return render(request, "blockchain/hostquery.html", content)

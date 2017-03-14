@@ -1,0 +1,74 @@
+<!DOCTYPE html>                                                                                                                                                                                                     
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="keywords" content="[keywords]" />
+    <meta name="description" content="[description]"/>
+    <meta http-equiv="Cache-Control" content="no-transform" /> 
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    {% load static %}
+    <title>Host Manage</title>
+
+    <link rel="stylesheet" href="{% static '/blockchain/css/common.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/admin.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static '/common/DataTables-1.10.8/css/jquery.dataTables.css' %}">
+    <link rel="stylesheet" href="{% static '/common/font-awesome-4.5.0/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/style.css' %}">
+    <script type="text/javascript" src="{% static '/blockchain/plugins/jquery-1.11.2.js' %}"></script>
+
+</head>
+<body>
+	<div id="managers-list">
+		<table class="table table-border">
+			<thead>
+				<tr>
+					<th width="150" class="text-center">Host</th>
+					<th width="200" class="text-center"> &nbsp;&nbsp;&nbsp;&nbsp;Modify
+                        <a class="add-button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                    </th>
+				</tr>
+			</thead>
+			<tbody class="text-center">
+                {% for host in hosts %}
+					<tr>
+
+                        <td class="text-center">{{ host }}</td>
+                        <td>
+                            <a class="delete-button" host-id="{{ host }}"><i class="fa fa-trash"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a class="modify-button" host-id="{{ host }}"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                            <a class="modify-cancel-button none" host-id="{{ host }}"><i class="fa fa-ban" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a class="modify-check-button none" host-id="{{ host }}"><i class="fa fa-check" aria-hidden="true"></i></a>
+						</td>
+					</tr>
+                {% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<div id="managers-addition" class="none">
+		<table id="managers-add-table" class="table table-border">
+			<tbody>
+				<tr id="host">
+					<td>host</td>
+                    <td id="managers-add-td1">
+                        <input type="text" name="id" placeholder="account_id" value="">
+                    </td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="table-addition-submit">
+			<input type="button" value="submit" class="submit">
+			<input type="reset" value="cancle" class="reset">
+		</div>
+	</div>
+
+    <script charset="utf8" src="{% static '/common/DataTables-1.10.8/js/jquery.dataTables.js' %}"></script>
+    <script charset="utf8" src="{% static '/blockchain/script/host.js' %}"></script>
+
+</body>
+</html>
+
