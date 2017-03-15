@@ -4,6 +4,8 @@ from django.db import connection
 import blockchain.models as BCModels
 import hashlib
 
+from . import gengraph
+
 def active(func):
     def wrapper(*args, **kw):
         if not args[0].session.has_key('user_id'):
@@ -213,11 +215,6 @@ def hostquery(request):
         cursor.execute("select * from blockchain_host")
         hosts = cursor.fetchall()
 
-    # host_list = BCModels.Host.objects.raw("select * from blockchain_host")
-    # hosts = []
-
-    # for ip in host_list:
-    #     hosts.append(ip.host)
     host_list = []
     for host in hosts:
         host_list.append(host[0])
@@ -230,8 +227,27 @@ def hostquery(request):
 @active
 def build(request):
     num_node = request.POST['num_node']
+    if len(num_node) == 0:
+        num_node = 10
+    else:
+        num_node = int(num_node)
+    
+    
+    with connection.cursor() as cursor:
+        cursor.execute("select * from blockchain_host")
+        hosts = cursor.fetchall()
+    hosts_list = []
 
+    for host in hosts:
+        hosts_list.append(host[0])
+    
+    network = gengraph.host_list(num_node, hosts_list)
+    print(network)
+
+    
     content = {
         'num_node'    : num_node,
+        'hosts'       : hosts_list,
+        'network'     : network,
     }
     return render(request, "blockchain/simulation.html", content)

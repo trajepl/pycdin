@@ -57,6 +57,7 @@
 					<i class="fa fa-angle-right fr"></i>
 				</a>
 				<ul class="sub-list">
+                    {% if root %}
 					<li>
 						<a href="javascript:openapp('hostquery',1,'IP')">
 							<i class="fa fa-caret-right"></i>
@@ -64,6 +65,7 @@
 							<i class="fa fa-angle-right fr"></i>
 						</a>
 					</li>
+                    {% endif %}
 					<li>
 						<a href="javascript:openapp('',2,'Result')">
 							<i class="fa fa-caret-right"></i>
