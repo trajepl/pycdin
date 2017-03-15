@@ -84,9 +84,7 @@ def gen_connected_graph(n):
     """
     graph = create_graph(n)
     ret_graph = prim(graph)
-    print('ret_graph 87:----------')
-    print(ret_graph)
-    print('ret_graph 89:----------')
+    
     node_num = len(ret_graph)
     num_edge_random = random.randint(0, int(node_num * 0.8))
 
@@ -96,7 +94,9 @@ def gen_connected_graph(n):
         y = id_edge % node_num
         if ret_graph[x][y] == '*' and ret_graph[y][x] and x != y:
             ret_graph[x][y] = 1
-    print(ret_graph)
+
+    # print('return ret_graph')
+    # print(ret_graph)
     return ret_graph
 
 
@@ -122,7 +122,6 @@ def host_maps(n, host_list):
                 break
 
     random.shuffle(maps)
-    print(maps)
     graph = gen_connected_graph(n)
     return graph, maps
 
@@ -147,7 +146,7 @@ def host_list(n, host_list):
                 s += '|'
 
         res.append(s)
-    return res
+    return maps, res
 
 
 MIN_PORT = 9000
@@ -155,5 +154,6 @@ MAX_PORT = 9999
 
 if __name__ == '__main__':
     host = ['1', '2', '3']
-    res = host_list(4, host)
+    maps, res = host_list(4, host)
+    print(maps)
     print(res)

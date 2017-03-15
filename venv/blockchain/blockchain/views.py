@@ -4,7 +4,7 @@ from django.db import connection
 import blockchain.models as BCModels
 import hashlib
 
-from . import gengraph
+from . import gengraph, route_client
 
 def active(func):
     def wrapper(*args, **kw):
@@ -224,8 +224,20 @@ def hostquery(request):
     }
     return render(request, "blockchain/hostquery.html", content)
 
+
+def build_dir(keys, values):
+    res = {}
+    for i in range(len(keys)):
+        key = keys[i][0] + ':' + keys[i][1]
+        res[key] = values[i]
+    return res
+
 @active
 def build(request):
+    ROUTE_PORT = 8100
+    PRE_FIX_ROUTE = '[ROUTE:]'
+    PRE_FIX_PROCESS = '[PROCESS:]'
+
     num_node = request.POST['num_node']
     if len(num_node) == 0:
         num_node = 10
@@ -241,13 +253,43 @@ def build(request):
     for host in hosts:
         hosts_list.append(host[0])
     
-    network = gengraph.host_list(num_node, hosts_list)
-    print(network)
+    addr_list, route = gengraph.host_list(num_node, hosts_list)
+    route_dir = build_dir(addr_list, route)
 
+
+    for addr in addr_list:
+        addr_key = addr[0] + ":" + addr[1]
+        route_dir_port = {}
+        route_dir_port[addr[1]] = route_dir[addr_key]
+        route_client.route_client(addr[0], ROUTE_PORT, route_dir_port, PRE_FIX_ROUTE)
     
     content = {
         'num_node'    : num_node,
         'hosts'       : hosts_list,
-        'network'     : network,
+        'addr_list'   : addr_list,
+        'route'       : route,
     }
     return render(request, "blockchain/simulation.html", content)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
