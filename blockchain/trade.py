@@ -20,7 +20,9 @@ class Trade:
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.get_socket_list('host/hostlist')
+        
+        print('24: Trade [%s %s]' %(self.HOST, self.PORT_SERVER))
+        self.get_socket_list('host/'+str(self.PORT_SERVER))
 
     def set_data(self, data):
         if len(data) != 0:
@@ -131,19 +133,13 @@ class Trade:
             self.start_send()
 
 
-def start_server():
-    while True:
-        if len(sys.argv) > 0:
-            host = socket.gethostbyname(socket.gethostname())
-            trade = Trade(host, sys.argv[0])
-            trade.start_server()
-            server = Thread(target=trade.receive)
-            server.start()
-            client = Thread(target=trade.send)
-            client.start()
-            break
-        else:
-            print("Server port needed.")
+def start_server(host, port):
+    trade = Trade(host, port)
+    trade.start_server()
+    server = Thread(target=trade.receive)
+    server.start()
+    client = Thread(target=trade.send)
+    client.start()
 
 
 # def mul_thread(fn):
@@ -153,4 +149,4 @@ def start_server():
 
 
 if __name__ == '__main__':
-    start_server()
+    start_server('127.0.0.1', 8000)

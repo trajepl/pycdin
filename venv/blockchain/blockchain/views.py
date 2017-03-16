@@ -255,13 +255,15 @@ def build(request):
     
     addr_list, route = gengraph.host_list(num_node, hosts_list)
     route_dir = build_dir(addr_list, route)
-
+    print('258:views addr_list %s' % addr_list)
+    print('259:views route_dir %s' % route_dir)
 
     for addr in addr_list:
         addr_key = addr[0] + ":" + addr[1]
         route_dir_port = {}
         route_dir_port[addr[1]] = route_dir[addr_key]
-        route_client.route_client(addr[0], ROUTE_PORT, route_dir_port, PRE_FIX_ROUTE)
+        route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_ROUTE, route_dir_port)
+        route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_PROCESS, addr[1])
     
     content = {
         'num_node'    : num_node,

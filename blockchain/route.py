@@ -4,6 +4,8 @@ import socket
 import hashlib
 import json
 
+from trade import start_server
+
 PRE_FIX_ROUTE = "[ROUTE:]"
 PRE_FIX_PROCESS = "[PROCESS:]"
 
@@ -34,17 +36,25 @@ class RouteControl:
                 if data[0:len_route] == PRE_FIX_ROUTE:
                     data = data[len_route:]
                     route_dir = json.loads(data)
-                    print(route_dir)
+                    print("39: route route_dir: %s" %route_dir)
                     for key in route_dir:
                         origin_route_info = route_dir[key]
                         route_info = origin_route_info.split('|')[:-1]
                         with open('host/'+key, 'w') as route_out:
                             for info in route_info:
                                 route_out.write(info+'\n')
+
                     client_sock.send(b'success')
                     client_sock.close()
                     break
                 elif data[0:len_process] == PRE_FIX_PROCESS:
+                    data = data[len_process:].split(' ')
+                    
+                    addr_host = data[0]
+                    addr_port = data[1]
+            
+                    start_server(addr_host, int(addr_port))
+                    client_sock.send(b'success')
                     client_sock.close()
                     break
                 else:
