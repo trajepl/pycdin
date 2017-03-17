@@ -134,12 +134,18 @@ class Trade:
 
 
 def start_server(host, port):
-    trade = Trade(host, port)
-    trade.start_server()
-    server = Thread(target=trade.receive)
-    server.start()
-    client = Thread(target=trade.send)
-    client.start()
+    if len(sys.argv) >= 2:
+        print("138: start_server sys.argv: %s" % str(sys.argv))
+        host = sys.argv[1]
+        port = int(sys.argv[2])
+        trade = Trade(host, port)
+        trade.start_server()
+        server = Thread(target=trade.receive)
+        server.start()
+        # client = Thread(target=trade.send)
+        # client.start()
+    else:
+        print('wrong parm.')
 
 
 # def mul_thread(fn):

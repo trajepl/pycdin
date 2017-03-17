@@ -1,4 +1,5 @@
 # route control
+import os
 import sys
 import socket
 import hashlib
@@ -52,8 +53,8 @@ class RouteControl:
                     
                     addr_host = data[0]
                     addr_port = data[1]
-            
-                    start_server(addr_host, int(addr_port))
+                    os.system('python trade.py %s %s &' %(addr_host, addr_port))
+                    # start_server(addr_host, int(addr_port))
                     client_sock.send(b'success')
                     client_sock.close()
                     break
