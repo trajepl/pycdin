@@ -1,14 +1,14 @@
-# pycdin (python code injection)
+# BlockChain Simulation
 
 ``BlockChain`` ``Django``
 
-we use python socket and Django to implement ``BlockChain Simulation System``.
+we use python socket and Django to implement ``BlockChain Simulation``.
 
 ## component
 ### blockchain/
   This component is made up of ``block.py`` and ``chain.py`` which have a ``Block`` and ``Chain`` classes. These two classes implement the layer of blockchain in which we can read blocks from the corresponding file and some other functions. In order to search blocks quickly, we build the ``index.id`` file to record the offset of each block in the file. 
 
-    data struct
+data struct
 | data |bytes length|
 |:---|:---|
 |  magic network id | 8 |
