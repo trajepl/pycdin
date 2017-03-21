@@ -76,6 +76,9 @@ class Trade:
                     print('> [resend] to %s.' % host)
             except Exception as e:
                 print('! line 67: %s %s' % (e, host))
+            finally:
+                # close the client
+                self.client_socket.close()
 
     def get_socket_list(self, fn):
         with open(fn, 'r') as socket_list:
@@ -114,6 +117,10 @@ class Trade:
                             sock.send(check_code)
                             print('> [recv](%s@%s) receives info.' % addr)
                             print('> ' + data + ':' + check_code.decode())
+                            if len(self.SOCKET_LIST) != 0:
+                                self.DATA = data_bytes
+                                self.start_send()
+                                
                         else:
                             print('> [recv](%s@ %s) is offline.' % addr)
                         self.SOCKET_LIST.remove(sock)

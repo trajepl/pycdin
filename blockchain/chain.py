@@ -1,8 +1,9 @@
 import struct
-from block import Block, LEN_PRE_DATA, \
-    PREV_HASH, HASH_VALUE, LENGTH, PACK_FORMAT, TIMESTAMP
+from block import Block, LEN_PRE_DATA, SPLIT_NOTE, \
+    PREV_HASH, MERKLE_ROOT, LENGTH, PACK_FORMAT, TIMESTAMP
 
 ITEM_LEN = 16
+
 class Chain:
     def __init__(self):
         self.blockchain = []
@@ -25,7 +26,7 @@ class Chain:
         self.update_index(index_item, 'index.id', 'wb')
 
         index_item[0] += 1
-        index_item[1] = len(data) +  LEN_PRE_DATA
+        index_item[1] = block.length + LEN_PRE_DATA
         self.update_index(index_item, 'index.id', 'ab')
 
     def read_chain(self, fn):
@@ -39,14 +40,16 @@ class Chain:
                 block = list(struct.unpack(PACK_FORMAT, block_bytes))
                 data_len = block[LENGTH]
                 prev_hash = block[PREV_HASH].decode()
+                merkle_root = block[MERKLE_ROOT].decode()
                 timestamp = block[TIMESTAMP]
 
                 # read block data
                 data_bytes = chain.read(data_len)
                 data = struct.unpack(str(data_len) + 's', data_bytes)[0].decode()
+                data = data.split(SPLIT_NOTE)
 
                 block.append(data)
-                self.blockchain.append(Block(data, prev_hash, timestamp))
+                self.blockchain.append(Block(data, prev_hash, timestamp, merkle_root))
 
     def print_chain(self):
         for block in self.blockchain:
@@ -65,7 +68,7 @@ class Chain:
             chain.seek(index_item[0][1], 0)
             block_bytes = chain.read(LEN_PRE_DATA)
             block = list(struct.unpack(PACK_FORMAT, block_bytes))
-            block[HASH_VALUE] = block[HASH_VALUE].decode()
+            block[MERKLE_ROOT] = block[MERKLE_ROOT].decode()
 
         return block, index_item[1]
 
@@ -81,13 +84,13 @@ class Chain:
             block_bytes = chain.read(LEN_PRE_DATA)
             block = struct.unpack(PACK_FORMAT, block_bytes)
 
-            prev_hash = block[HASH_VALUE].decode()
+            prev_hash = block[MERKLE_ROOT].decode()
             return Block(data, prev_hash)
 
 
     def push_chain(self, data, fn):
         block_prefix, index_item = self.last_block_prefix(fn)
-        prev_hash = block_prefix[HASH_VALUE]
+        prev_hash = block_prefix[MERKLE_ROOT]
         timestamp = block_prefix[TIMESTAMP]
         block = Block(data, prev_hash, timestamp)
         self.blockchain.append(block)
@@ -96,12 +99,12 @@ class Chain:
 
     def add_block(self, data, fn):
         block_prefix, index_item = self.last_block_prefix(fn)
-        prev_hash = block_prefix[HASH_VALUE]
+        prev_hash = block_prefix[MERKLE_ROOT]
         block = Block(data, prev_hash)
         self.write_block(block, fn, 'ab')
 
         # update index file 'index.id'
-        len_block = len(data) + LEN_PRE_DATA
+        len_block = block.length + LEN_PRE_DATA
         index_item[0] += 1
         index_item[1] += len_block
         self.update_index(index_item, 'index.id', 'ab')
@@ -120,9 +123,10 @@ class Chain:
 
 if __name__ == '__main__':
     chain = Chain()
+    trade = ["trajep1 create first block.", "trajep create 2rd block.", "trajep create 3th block."]
     # chain.create_first_block('trajep create first block.', 'blockchain')
 
-    # chain.add_block( 'trajep create 10 block.', 'blockchain')
+    chain.add_block(trade,  'blockchain')
 
     chain.read_chain('blockchain')
 
@@ -130,8 +134,5 @@ if __name__ == '__main__':
 
     chain.print_chain()
     chain.print_index('index.id')
-
-
-
 
 
