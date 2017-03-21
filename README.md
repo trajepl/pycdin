@@ -2,7 +2,7 @@
 
 ``BlockChain`` ``Django``
 
-we use python injection to implement ``BlockChain``.
+we use python socket and Django to implement ``BlockChain Simulation System``.
 
 ## component
 ### blockchain/
@@ -14,10 +14,12 @@ we use python injection to implement ``BlockChain``.
 |  magic network id | 8 |
 |  timestamp |  8  |
 |  previous block hash |  64  |
-|  block hash |  64  |
+|  merkle root |  64  |
 |  data length |  4  |
 |  sum |  148  |
 |  data |  data length  |
+
+*Note that: In this component, we use the ``Merkle Tree`` to hash the transactions of list. The details about the Mekle Tree you can see [wiki-merkle-tree](https://en.wikipedia.org/wiki/Merkle_tree)*
 
 ### chat/ | module-inject/ | module/
 Those modules contains some little programs to implement and test the ``module-inject`` among many computers by socket of python module. We also implement the simple ``ChatRoom`` program.
@@ -29,103 +31,40 @@ In this component, we use the [nginx + uwsgi + python3 + django + virtualenv](ht
 Here is one example to explain the struct of blockchain:
 *Note that: there are some duplicate blocks we add into blockchain on purpose.*
 ```
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:12:23 2017
-    previous hash       : 0000000000000000000000000000000000000000000000000000000000000000
-    hash_value          : ba74546219a1f6189a511ac313bb109b5b9fe40c9bc669e87621ee7f3c198166
-    data length         : 26
-    data                : trajep create first block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:12:29 2017
-    previous hash       : ba74546219a1f6189a511ac313bb109b5b9fe40c9bc669e87621ee7f3c198166
-    hash_value          : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    data length         : 22
-    data                : trajep create 7 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:12:30 2017
-    previous hash       : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    hash_value          : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    data length         : 22
-    data                : trajep create 7 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:12:31 2017
-    previous hash       : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    hash_value          : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    data length         : 22
-    data                : trajep create 7 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:12:32 2017
-    previous hash       : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    hash_value          : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    data length         : 22
-    data                : trajep create 7 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:12:33 2017
-    previous hash       : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    hash_value          : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    data length         : 22
-    data                : trajep create 7 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:12:34 2017
-    previous hash       : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    hash_value          : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    data length         : 22
-    data                : trajep create 7 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:12:35 2017
-    previous hash       : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    hash_value          : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    data length         : 22
-    data                : trajep create 7 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:12:36 2017
-    previous hash       : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    hash_value          : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    data length         : 22
-    data                : trajep create 7 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:12:36 2017
-    previous hash       : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    hash_value          : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    data length         : 22
-    data                : trajep create 7 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:12:53 2017
-    previous hash       : 5e5fb8b696f870502d498ef1f21ddb5d97a2377898e71fb594b01200d457417d
-    hash_value          : 5ebfa46d73112ce1539f359a4cb66435ec3d6878ce75181c5db7c887da12df21
-    data length         : 22
-    data                : trajep create 8 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:13:11 2017
-    previous hash       : 5ebfa46d73112ce1539f359a4cb66435ec3d6878ce75181c5db7c887da12df21
-    hash_value          : cd12d78723093e6cdf574ce04c8a354a33988d4c39d7b961e945aecfa3a96c45
-    data length         : 22
-    data                : trajep create 9 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:13:18 2017
-    previous hash       : cd12d78723093e6cdf574ce04c8a354a33988d4c39d7b961e945aecfa3a96c45
-    hash_value          : ffe38405924d1eedea63dad9ebade73e7cdbd522c4415d077b134ca8c989a1c0
-    data length         : 23
-    data                : trajep create 10 block.
-    --------------------------------------------------------------------------------------
-    Magic id            : 0xdab5bffa
-    timestamp           : Wed Mar  1 10:24:05 2017
-    previous hash       : ffe38405924d1eedea63dad9ebade73e7cdbd522c4415d077b134ca8c989a1c0
-    hash_value          : ffe38405924d1eedea63dad9ebade73e7cdbd522c4415d077b134ca8c989a1c0
-    data length         : 23
-    data                : trajep create 10 block.
-    --------------------------------------------------------------------------------------
-    [(0, 0), (1, 174), (2, 344), (3, 514), (4, 684), (5, 854), (6, 1024), (7, 1194), (8, 1364), (9, 1534), (10, 1704), (11, 1874), (12, 2044), (13, 2215), (14, 2386)]
+Magic id            : 0xdab5bffa
+timestamp           : Tue Mar 21 12:42:33 2017
+previous hash       : 0000000000000000000000000000000000000000000000000000000000000000
+merkle_root         : ba74546219a1f6189a511ac313bb109b5b9fe40c9bc669e87621ee7f3c198166
+data length         : 26
+trade               : trajep create first block.
+--------------------------------------------------------------------------------------
+Magic id            : 0xdab5bffa
+timestamp           : Tue Mar 21 12:42:45 2017
+previous hash       : ba74546219a1f6189a511ac313bb109b5b9fe40c9bc669e87621ee7f3c198166
+merkle_root         : bdf0dc64671b6084b973f4a9e1f5d88da63b28b514604a4029b878d3d8890f1a
+data length         : 73
+trade               : trajep3 create first block.
+                    : trajep create 2rd block.
+                    : trajep create 3th bloc
+--------------------------------------------------------------------------------------
+Magic id            : 0xdab5bffa
+timestamp           : Tue Mar 21 12:43:02 2017
+previous hash       : bdf0dc64671b6084b973f4a9e1f5d88da63b28b514604a4029b878d3d8890f1a
+merkle_root         : 14b7e8ac1e30486a84dc04b590c20535bafe190422d6b9376967f4bde93692ce
+data length         : 73
+trade               : trajep1 create first block.
+                    : trajep create 2rd block.
+                    : trajep create 3th bloc
+--------------------------------------------------------------------------------------
+Magic id            : 0xdab5bffa
+timestamp           : Tue Mar 21 12:55:44 2017
+previous hash       : 14b7e8ac1e30486a84dc04b590c20535bafe190422d6b9376967f4bde93692ce
+merkle_root         : 14b7e8ac1e30486a84dc04b590c20535bafe190422d6b9376967f4bde93692ce
+data length         : 73
+trade               : trajep1 create first block.
+                    : trajep create 2rd block.
+                    : trajep create 3th bloc
+--------------------------------------------------------------------------------------
+[(0, 0), (1, 174), (2, 397), (3, 620), (4, 843)]
+
 ```
