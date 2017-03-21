@@ -17,6 +17,11 @@ def active(func):
 
 @active
 def index(request):
+    with connection.cursor() as cursor:
+        cursor.execute("select count(*) from blockchain_node where user=%s", [request.session['user_id']])
+        count_node = cursor.fetchone()[0]
+        
+    print("257: build count_node: %d" % count_node)
     context = {
         'userid'   : request.session['user_id'],
         'root'     : request.session['is_root'],
@@ -232,44 +237,58 @@ def build_dir(keys, values):
         res[key] = values[i]
     return res
 
+def insert_into_node(request, addr_list):
+    user = request.session['user_id']
+    with connection.cursor() as cursor:
+        for addr in addr_list:
+            host = addr[0]
+            port = addr[1]
+            cursor.execute("insert into blockchain_node values(%s, %s, %s)", [user, host, int(port)])
+        cursor.execute('commit')
+
+
 @active
 def build(request):
-    ROUTE_PORT = 8100
-    PRE_FIX_ROUTE = '[ROUTE:]'
-    PRE_FIX_PROCESS = '[PROCESS:]'
-
-    num_node = request.POST['num_node']
-    if len(num_node) == 0:
-        num_node = 10
-    else:
-        num_node = int(num_node)
-    
-    
     with connection.cursor() as cursor:
         cursor.execute("select * from blockchain_host")
-        hosts = cursor.fetchall()
-    hosts_list = []
+        hosts_list = list(cursor.fetchall())
 
-    for host in hosts:
-        hosts_list.append(host[0])
-    
-    addr_list, route = gengraph.host_list(num_node, hosts_list)
-    route_dir = build_dir(addr_list, route)
-    print('258:views addr_list %s' % addr_list)
-    print('259:views route_dir %s' % route_dir)
 
-    for addr in addr_list:
-        addr_key = addr[0] + ":" + addr[1]
-        route_dir_port = {}
-        route_dir_port[addr[1]] = route_dir[addr_key]
-        route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_ROUTE, route_dir_port)
-        route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_PROCESS, addr[1])
+    if count_node == 0:
+
+        ROUTE_PORT = 8100
+        PRE_FIX_ROUTE = '[ROUTE:]'
+        PRE_FIX_PROCESS = '[PROCESS:]'
+
+        num_node = request.POST['num_node']
+        if len(num_node) == 0:
+            num_node = 10
+        else:
+            num_node = int(num_node)
     
+        addr_list, route = gengraph.host_list(num_node, hosts_list)
+        insert_into_node(request, addr_list)
+        route_dir = build_dir(addr_list, route)
+        print('258:views addr_list %s' % addr_list)
+        print('259:views route_dir %s' % route_dir)
+
+        for addr in addr_list:
+            addr_key = addr[0] + ":" + addr[1]
+            route_dir_port = {}
+            route_dir_port[addr[1]] = route_dir[addr_key]
+            # route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_ROUTE, route_dir_port)
+            # route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_PROCESS, addr[1])
+            request.session['is_built'] = True
+
+    else:
+        with connection.cursor() as cursor:
+            cursor.execute("select host, port from blockchain_node where user=%s",[request.session['user_id']])
+            addr_list = list(cursor.fetchall())
+        
     content = {
-        'num_node'    : num_node,
         'hosts'       : hosts_list,
         'addr_list'   : addr_list,
-        'route'       : route,
+        # 'route'       : route,
     }
     return render(request, "blockchain/simulation.html", content)
 

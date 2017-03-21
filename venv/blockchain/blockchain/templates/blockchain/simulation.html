@@ -1,0 +1,91 @@
+<html lang="zh-CN"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Dashboard Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="dashboard.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  <style type="text/css">.y-bubble{position:absolute;z-index:9999;margin:0;padding:10px;min-width:300px;max-width:500px;border-radius:5px;background-color:rgba(13,13,13,0.8);box-shadow:0 0 20px rgba(0,0,0,0.8);color:#fff !important;text-align:left;font-weight:300;font-size:16px;font-family:"Roboto", 'Helvetica', sans-serif;line-height:1.5}.y-bubble p{margin:2px 0;color:#fff !important;line-height:20px}.y-bubble .y-bubble-word{color:#f60}.y-bubble .y-arrow{position:absolute;width:0;height:0;border-right:10px solid transparent;border-left:10px solid transparent}.y-bubble .y-bubble-explains{margin:10px 0}.y-bubble .y-clearfix:before,.y-bubble .y-clearfix:after{display:table;content:''}.y-bubble .y-clearfix:after{clear:both}.y-bubble .y-bubble-more{margin-top:10px}.y-bubble .y-bubble-more .y-pull-left{float:left}.y-bubble .y-bubble-more .y-pull-right{float:right}.y-bubble .y-bubble-more a{color:#ffffff !important;text-decoration:none !important}.y-bubble .y-bubble-more a:hover{text-decoration:underline !important}.y-bubble .spinner{display:inline-block;position:relative;margin:0 5px;width:20px;height:20px;vertical-align:middle}.y-bubble .spinner.hide{display:none}.y-bubble .spinner .double-bounce1,.y-bubble .spinner .double-bounce2{width:100%;height:100%;border-radius:50%;background-color:#ffffff;opacity:0.6;position:absolute;top:0;left:0;-webkit-animation:sk-bounce 2.0s infinite ease-in-out;animation:sk-bounce 2.0s infinite ease-in-out}.y-bubble .spinner .double-bounce2{-webkit-animation-delay:-1.0s;animation-delay:-1.0s}@-webkit-keyframes sk-bounce{0%,100%{-webkit-transform:scale(0)}50%{-webkit-transform:scale(1)}}@keyframes sk-bounce{0%,100%{transform:scale(0);-webkit-transform:scale(0)}50%{transform:scale(1);-webkit-transform:scale(1)}}
+</style></head>
+
+  <body>
+
+    <div class="container-fluid">
+      <div class="row">
+        
+        <div class="col-md-12 main">
+          <h1 class="page-header">Dashboard</h1>
+
+          <div class="row placeholders">
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+          </div>
+
+          <h2 class="sub-header">Section title</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Host</th>
+                  <th>Port</th>
+                  <th>Transfer</th>
+                  <th>Mine</th>
+                  <th>Hack</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for addr in addr_list %}
+                <tr>
+                    <td>{{ addr.0 }}</td>
+                    <td>{{ addr.1 }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<div></div>
+</body></html>
