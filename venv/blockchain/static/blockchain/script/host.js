@@ -64,10 +64,6 @@ $(document).ready(function() {
     		var text = $(tdList[i]).text();
     		$(tdList[i]).empty().append($("<input class='modify-input' value='"+text+"''>"));
         }
-
-
-
-
         /*
         $.post(
             "/hostmodify",
@@ -80,7 +76,7 @@ $(document).ready(function() {
                 } else  alert("Modify failed! " + data.content);
             }
         );*/
-    })
+    });
 
     $("table").on('click', '.delete-button', function() {
         if(!confirm('Confirm delete?')) {

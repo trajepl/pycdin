@@ -18,13 +18,17 @@ def active(func):
 @active
 def index(request):
     with connection.cursor() as cursor:
-        cursor.execute("select count(*) from blockchain_node where user=%s", [request.session['user_id']])
-        count_node = cursor.fetchone()[0]
-        
-    print("257: build count_node: %d" % count_node)
+        cursor.execute("select * from blockchain_node where user=%s", [request.session['user_id']])
+        addrs_list = cursor.fetchall()
+        count_node = len(addrs_list)
+    
+    request.session['is_built'] = False if count_node == 0 else True
+    
     context = {
         'userid'   : request.session['user_id'],
         'root'     : request.session['is_root'],
+        'is_built' : request.session['is_built'],
+        'addrs'    : addrs_list,
     }
     return render(request, 'blockchain/index.html', context)
 
@@ -248,11 +252,13 @@ def insert_into_node(request, addr_list):
 
 
 @active
-def build(request):
+def build(request): 
     with connection.cursor() as cursor:
         cursor.execute("select * from blockchain_host")
         hosts_list = list(cursor.fetchall())
-
+        
+        cursor.execute("select count(*) from blockchain_node where user = %s", [request.session['user_id']])
+        count_node = cursor.fetchone()[0]
 
     if count_node == 0:
 
@@ -278,7 +284,6 @@ def build(request):
             route_dir_port[addr[1]] = route_dir[addr_key]
             # route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_ROUTE, route_dir_port)
             # route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_PROCESS, addr[1])
-            request.session['is_built'] = True
 
     else:
         with connection.cursor() as cursor:
