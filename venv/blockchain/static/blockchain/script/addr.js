@@ -1,12 +1,11 @@
 $(document).ready(function() {
-    $(".trasfer-button").click(function() {
+    $(".add-button").click(function() {
         $("#managers-addition").fadeIn(300);
         $("#managers-addition .dataTables_filter input[type='search']").focus();
     });
 
-	$("table").on('click','.mining-button',function() {
+	$("table").on('click','.status-button',function() {
 
-        history.go(0);
 		return;
 	});
 
@@ -14,7 +13,7 @@ $(document).ready(function() {
 		
 	});
 
-    $("table").on('click', '.delete-button', function() {
+    $("table").on('click', '.stop-button', function() {
         if(!confirm('Confirm delete?')) {
             return;
         }
@@ -87,14 +86,6 @@ $(document).ready(function() {
                 "sSortAscending": ": 以升序排列此列",
                 "sSortDescending": ": 以降序排列此列"
             }
-        }
-    });
-
-    $(".dataTables_filter input[type='search']").on('input propertychange', function() {
-        if($(this).val().trim() != "") {
-            $("#userList").removeClass("none");
-        } else {
-            $("#userList").addClass("none");
         }
     });
 

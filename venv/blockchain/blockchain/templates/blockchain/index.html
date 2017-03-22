@@ -126,8 +126,9 @@
 						<tr>
 							<th width="200" class="text-center">Host</th>
 							<th width="200" class="text-center">Port</th>
-							<th width="200" class="text-center">Trasfer</th>
-							<th width="200" class="text-center">Mining</th>
+                            <th width="200" class="text-center">Status &nbsp;&nbsp; 
+                                <a class="add-button"><i class="fa fa-plus"></i></a>
+                            </th>
 							<th width="200" class="text-center">Hack</th>
 						</tr>
 					</thead>
@@ -138,10 +139,8 @@
 								<td class="text-center">{{ addr.2 }}</td>
 
 								<td>
-									<a class="trasfer-button"> <i class="fa fa-exchange" aria-hidden="true"></i></a>
-								</td>
-								<td>
-									<a class="mining-button"> <i class="fa fa-search-minus" aria-hidden="true"></i></a>
+									<a class="status-button"> <i class="fa fa-unlock-alt" aria-hidden="true"></i></a>
+									<a class="status-button none"> <i class="fa fa-lock" aria-hidden="true"></i></a>
 								</td>
 								<td>
 									<a class="hack-button"> <i class="fa fa-bug" aria-hidden="true"></i></a>
@@ -157,11 +156,17 @@
 				<table id="managers-add-table" class="table table-border">
 					<tbody>
 						<tr id="transaction">
-							<td>Transaction: </td>
+							<td>Host </td>
 							<td id="managers-add-td1">
-								<input type="text" name="id" placeholder="Transaction" value="">
+								<input type="text" name="id" placeholder="Host" value="">
 							</td>
 						</tr>
+                        <tr>
+                            <td>Port </td>
+							<td id="managers-add-td2">
+								<input type="text" name="id" placeholder="Port" value="">
+							</td>
+                        </tr>
 					</tbody>
 				</table>
 				<div id="table-addition-submit">
