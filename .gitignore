@@ -1,6 +1,12 @@
+# private protect
 pycdin/venv/blockchain/blockchain/setting.py
-pycdin/venv/blockchain/.vscode/
 pycdin/blockchain/host/
+
+# python cache
+pycdin/venv/blockchain/blockchain/__pycache__/
+
+# idea config file
+pycdin/venv/blockchain/.vscode/
 .vscode/
 .idea/
 
