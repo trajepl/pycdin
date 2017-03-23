@@ -1,5 +1,5 @@
 # private protect
-venv/blockchain/blockchain/setting.py
+venv/blockchain/blockchain/settings.py
 
 # tmp file
 blockchain/host/
