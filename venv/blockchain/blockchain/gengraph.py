@@ -1,13 +1,12 @@
 # generate graph (node :n edge:e)
 
-#
-# linux cmd return ports which are used.
-# netstat -ntl |grep -v Active| grep -v Proto|awk '{print $4}'|awk -F: '{print $NF}'
-#
 import random
 
-
 def create_graph(n):
+    '''
+    :param n: number of node
+    :return : generate a complete-graph, random the value of edges(no direction graph)
+    '''
     node_list = []
     for i in range(n):
         node_list.append([])
@@ -35,6 +34,10 @@ def min_edge(close_edge, n, key):
 
 
 def empty_graph(n):
+    '''
+    :param n: number of node
+    :return : generate a empty graph. the value of edge filled with "*" 
+    '''
     node_list = []
 
     for i in range(n):
@@ -44,7 +47,7 @@ def empty_graph(n):
 
     return node_list
 
-
+# min generation graph alg
 def prim(node_list):
     ret_graph = empty_graph(len(node_list))
     close_edge = []
@@ -66,6 +69,7 @@ def prim(node_list):
         start = close_edge[key_node_loop][-1][0]
         end = close_edge[key_node_loop][-1][1]
         ret_graph[start][end] = 1
+        ret_graph[end][start] = 1
 
         close_edge[key_node_loop][1] = 0
         node_visited.append(key_node_loop)
@@ -80,11 +84,12 @@ def prim(node_list):
 def gen_connected_graph(n):
     """
     :param n: number of node in graph.
-    :return:
+    :return : generate a connected graph
     """
     graph = create_graph(n)
     ret_graph = prim(graph)
-    
+    print(ret_graph)
+    # randomly add some edge.
     node_num = len(ret_graph)
     num_edge_random = random.randint(0, int(node_num * 0.8))
 
@@ -92,11 +97,10 @@ def gen_connected_graph(n):
         id_edge = random.randint(0, (node_num - 1) * 2)
         x = id_edge // node_num
         y = id_edge % node_num
-        if ret_graph[x][y] == '*' and ret_graph[y][x] and x != y:
+        if ret_graph[x][y] == '*' and ret_graph[y][x] == '*' and x != y:
             ret_graph[x][y] = 1
+            ret_graph[y][x] = 1
 
-    # print('return ret_graph')
-    # print(ret_graph)
     return ret_graph
 
 
@@ -128,7 +132,7 @@ def host_maps(n, host_list):
 
 def host_list(n, host_list):
     """
-    :param n: number of root.
+    :param n: number of node.
     :param host_list: cluster pc IP LIST.
     :return: [[host port|*m] * n]  every item in return res means the address which should be send msg.
     """
@@ -152,8 +156,8 @@ def host_list(n, host_list):
 MIN_PORT = 9000
 MAX_PORT = 9999
 
-if __name__ == '__main__':
-    host = ['1', '2', '3']
-    maps, res = host_list(4, host)
-    # print(maps)
-    # print(res)
+
+## test
+# if __name__ == '__main__':
+#     host = ['1', '2', '3']
+#     maps, res = host_list(5, host)
