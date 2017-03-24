@@ -88,7 +88,7 @@ def gen_connected_graph(n):
     """
     graph = create_graph(n)
     ret_graph = prim(graph)
-    print(ret_graph)
+    
     # randomly add some edge.
     node_num = len(ret_graph)
     num_edge_random = random.randint(0, int(node_num * 0.8))

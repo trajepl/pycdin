@@ -4,8 +4,6 @@ import socket
 import select
 import hashlib
 
-from threading import Thread
-
 
 class Trade:
     def __init__(self, host, port_server):
@@ -16,17 +14,16 @@ class Trade:
         # self.PORT_SERVER = 8081
         self.PORT_SERVER = port_server
         self.MAX_LEN_CONN = 10
-        self.DATA = []
+        self.DATA = ""
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
         print('24: Trade [%s %s]' %(self.HOST, self.PORT_SERVER))
         self.get_socket_list('host/'+str(self.PORT_SERVER))
 
+    # self.DATA is a list.
     def set_data(self, data):
         if len(data) != 0:
-            self.DATA.append(data+' | ')
+            self.DATA = data
 
     def set_host(self, host, port_server):
         self.HOST = host
@@ -41,8 +38,12 @@ class Trade:
         self.server_socket.listen(self.MAX_LEN_CONN)
 
         self.SOCKET_LIST.append(self.server_socket)
+        print('Start trade server.')
 
-        print('Start tcp server.')
+    def send(self, data):
+        self.set_data(data)
+        print('> [sending] %s' % self.DATA)
+        self.start_send()
 
     def start_send(self):
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -99,7 +100,7 @@ class Trade:
             sock.send(b'False')
             return False
 
-    def receive(self, ):
+    def receive(self):
         while True:
             ready_to_read, read_to_write, in_error = select.select(self.SOCKET_LIST, [], [], 0)
             for sock in ready_to_read:
@@ -129,16 +130,6 @@ class Trade:
                         self.SOCKET_LIST.remove(sock)
         self.server_socket.close()
 
-    def send(self):
-        while True:
-            self.DATA = []
-            data = ''
-            while data != '#':
-                self.set_data(data)
-                data = input("> [send](exit with '#'):")
-            print('> [sending] %s' % self.DATA)
-            self.start_send()
-
 
 def start_server(host, port):
     if len(sys.argv) >= 2:
@@ -147,19 +138,10 @@ def start_server(host, port):
         port = int(sys.argv[2])
         trade = Trade(host, port)
         trade.start_server()
-        server = Thread(target=trade.receive)
-        server.start()
-        # client = Thread(target=trade.send)
-        # client.start()
+        trade.receive()
     else:
         print('wrong parm.')
 
 
-# def mul_thread(fn):
-#     with open(fn, 'r') as host_in:
-#         for line in host_in.readlines():
-#             Thread(target=main).start()
-
-
-if __name__ == '__main__':
-    start_server('127.0.0.1', 8000)
+# if __name__ == '__main__':
+#     start_server('127.0.0.1', 8000)

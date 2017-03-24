@@ -5,9 +5,11 @@ venv/blockchain/blockchain/settings.py
 blockchain/host/
 
 # python cache
+blockchain/module/__pycache__/
 blockchain/__pycache__/
 module-inject/module/__pycache__
 venv/blockchain/blockchain/__pycache__/
+
 
 # idea config file
 venv/blockchain/.vscode/

@@ -255,7 +255,11 @@ def insert_into_node(request, addr_list):
 def build(request): 
     with connection.cursor() as cursor:
         cursor.execute("select * from blockchain_host")
-        hosts_list = list(cursor.fetchall())
+        hosts_list_tmp = list(cursor.fetchall())
+
+        hosts_list = list()
+        for host in hosts_list_tmp:
+            hosts_list.append(host[0])
         
         cursor.execute("select count(*) from blockchain_node where user = %s", [request.session['user_id']])
         count_node = cursor.fetchone()[0]
@@ -273,7 +277,7 @@ def build(request):
             num_node = int(num_node)
     
         addr_list, route = gengraph.host_list(num_node, hosts_list)
-        insert_into_node(request, addr_list)
+        # insert_into_node(request, addr_list)
         route_dir = build_dir(addr_list, route)
         print('258:views addr_list %s' % addr_list)
         print('259:views route_dir %s' % route_dir)
