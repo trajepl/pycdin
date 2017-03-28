@@ -1,11 +1,13 @@
 # broadcast msg
-import time
-import random
-from threading import Timer
-
+import sys
+sys.path.append('../')
 import trade
 
-SEND_INTERVAL = 10
+import random
+import time
+from threading import Timer
+
+MINE_INTERVAL = 10 * 60
 
 def broadcast_msg_timer(data, host, port):
     '''
@@ -14,7 +16,7 @@ def broadcast_msg_timer(data, host, port):
     send_process = trade.Trade(host, int(port))
     send_process.send(data)
    
-def random_send(data, hosts_list):
+def mine(process, timestamp):
     '''
     : set fixed time (intercal 10s) to randomly selectting a source host sending data
     '''
@@ -47,12 +49,3 @@ def start_broaccast(hosts_list):
     timer = Timer(0, random_send(data, hosts_list))
     timer.start()
     return timer
-
-
-# # test
-# if __name__ == '__main__':
-#     hosts_list = [('127.0.0.1', 9000), ('127.0.0.1', 9001), ('127.0.0.1', 9002), ('127.0.0.1', 9003)]
-#     start_broaccast(hosts_list)
-
-#     time.sleep(15)
-#     timer.cancle()
