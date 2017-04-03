@@ -3,9 +3,13 @@ import sys
 import socket
 import select
 import hashlib
+import transaction
 
+PRE_FIX_TRANSACTION = '[TRANSACTION]'
+PRE_FIX_REQUEST = '[REQUEST_INFO]'
+PRE_FIX_BLOCK = '[BLOCK]'
 
-class Trade:
+class BCNode:
     def __init__(self, host, port_server):
         '''
         : init socket host(string) | port_server(int)
@@ -15,17 +19,22 @@ class Trade:
 
         self.RECV_BUFFER = 4096
         self.MAX_LEN_CONN = 10
+        self.FLAG_MINING = True # status of mining
+        self.UNMARK_FILE = 'unmark'
 
-        self.SOCKET_LIST = []  # connection client socket_list
         self.TRANSACTION = set() # transaction information
+        self.SOCKET_LIST = []  # connection client socket_list
         self.HOST_LIST = [] # one-step node
         self.get_socket_list('host/'+str(self.PORT_SERVER)) # get the one-step node
 
-        self.DATA = "" 
+        self.DATA = ''
 
-    def set_data(self, data):
-        if len(data) != 0:
-            self.DATA = data
+    def set_data(self, pre_fix, data):
+        '''
+        : set data to string: pre_fix|source_addr|info
+        '''
+        self.DATA = pre_fix + '|' + self.HOST + ' ' + self.PORT_SERVER + '|'
+        self.DATA += data if len(data) != 0 else ''
 
     def get_socket_list(self, fn):
         with open(fn, 'r') as socket_list:
@@ -47,16 +56,20 @@ class Trade:
     def start_send(self):
         '''
         : start socket client
+        : param: except_addr(string: ip+' '+port)
         '''
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.settimeout(2)
 
         for host in self.HOST_LIST:
+            if len(except_addr) == 0 or host == except_addr:
+                continue # except source_host
+                
             host = host.split(' ') # host: [ip(string), port(string)]
             host[1] = int(host[1]) 
 
-            if host[1] == self.PORT_SERVER and host[0] == self.HOST: 
-                continue # except itself
+            # if host[1] == self.PORT_SERVER and host[0] == self.HOST: 
+            #     continue # except itself
             
             while True:
                 print("$ [2 send to]: %s" % host)
@@ -92,18 +105,47 @@ class Trade:
     
         return True if hash_code == check_code else False
 
-    def send(self, data):
+    def send(self, pre_fix, data, except_addr = ''):
         '''
         : set data information then call self.start_send to send data
         '''
-        self.set_data(data)
+        self.set_data(pre_fix, data)
         print('> [1 sending] %s' % self.DATA)
-        self.start_send()
+        self.start_send(except_addr)
+
+    def relay_data(self, transfer_io, data):
+        '''
+        : relay_data
+        : param: data(string:pre_fix|source_addr|transaction)
+        '''
+        data_list = data.split('|')
+        self.TRANSACTION.add(data_list[2]) # store data in memory(unmark)
+        transfer_io.write(data_list[2]) # store data in disk(unmark)
+        transfer_io.flush()
+
+        if len(self.SOCKET_LIST) != 0:
+            self.send(PRE_FIX_TRANSACTION, data, data_list[1]) # relay data to one-step node
+
+    def answer_request_info(self, sock):
+        '''
+        : answer_request_info
+        '''
+        with open(self.UNMARK_FILE, 'r') as out:
+            data = out.read()
+        sock.send(data.encode())
+
+    def valid_block(self, block):
+        '''
+        : answer_request_info
+        '''
+        pass
 
     def receive(self):
         '''
         : receive rules in server socket
         '''
+        transfer_io = open(self.UNMARK_FILE, 'a')
+
         while True:
             ready_to_read, read_to_write, in_error = select.select(self.SOCKET_LIST, [], [], 0)
             for sock in ready_to_read:
@@ -121,10 +163,12 @@ class Trade:
                             print('> [recv](%s@%s) receives info.' % addr)
                             check_data = sock.recv(self.RECV_BUFFER).decode() # check status
                             if check_code == 'success':
-                                self.TRANSACTION.add(data)
-                                if len(self.SOCKET_LIST) != 0:
-                                    self.DATA = data
-                                    self.start_send() # transmit data to one-step node
+                                if data.startswith(PRE_FIX_TRANSACTION):
+                                    self.relay_data(transfer_io, data)
+                                elif data.startswith(PRE_FIX_REQUEST):
+                                    self.answer_request_info(sock)
+                                elif data.startswith(PRE_FIX_BLOCK):
+                                    self.valid_block(data)
                         else:
                             print('> [recv](%s@ %s) is offline.' % addr)
                         self.SOCKET_LIST.remove(sock)
@@ -134,14 +178,15 @@ class Trade:
         self.server_socket.close()
 
 
-def start_server(host, port):
+def start_server(host, port, hosts_list):
     if len(sys.argv) >= 2:
         print("138: start_server sys.argv: %s" % str(sys.argv))
         host = sys.argv[1]
         port = int(sys.argv[2])
-        trade = Trade(host, port)
-        trade.start_server()
-        trade.receive()
+        bcnode = BCNode(host, port)
+        bcnode.start_server()
+        bcnode.receive()
+        transaction.send(bcnode, hosts_list)
     else:
         print('wrong parm.')
 
