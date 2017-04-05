@@ -2,7 +2,7 @@ import struct
 from block import Block, LEN_PRE_DATA, SPLIT_NOTE, \
     PREV_HASH, MERKLE_ROOT, LENGTH, PACK_FORMAT, TIMESTAMP
 
-ITEM_LEN = 16
+ITEM_LEN = 16 # index file length
 
 class Chain:
     def __init__(self):
@@ -123,10 +123,10 @@ class Chain:
 
 if __name__ == '__main__':
     chain = Chain()
-    trade = ["trajep1 create first block.", "trajep create 2rd block.", "trajep create 3th block."]
-    # chain.create_first_block('trajep create first block.', 'blockchain')
+    trade = ["trajep2 create first block.", "trajep create 2rd block.", "trajep create 3th block."]
+    chain.create_first_block('trajep create first block.', 'blockchain')
 
-    chain.add_block(trade,  'blockchain')
+    # chain.add_block(trade,  'blockchain')
 
     chain.read_chain('blockchain')
 
