@@ -119,12 +119,13 @@ class BCNode:
         : param: data(string:pre_fix|source_addr|transaction)
         '''
         data_list = data.split('|')
-        self.TRANSACTION.add(data_list[2]) # store data in memory(unmark)
-        transfer_io.write(data_list[2]) # store data in disk(unmark)
-        transfer_io.flush()
+        if data_list not in self.TRANSACTION:
+            self.TRANSACTION.add(data_list[2]) # store data in memory(unmark)
+            transfer_io.write(data_list[2]) # store data in disk(unmark)
+            transfer_io.flush()
 
-        if len(self.SOCKET_LIST) != 0:
-            self.send(PRE_FIX_TRANSACTION, data, data_list[1]) # relay data to one-step node
+            if len(self.SOCKET_LIST) != 0:
+                self.send(PRE_FIX_TRANSACTION, data, data_list[1]) # relay data to one-step node
 
     def answer_request_info(self, sock):
         '''
@@ -178,11 +179,12 @@ class BCNode:
         self.server_socket.close()
 
 
-def start_server(host, port, hosts_list):
+def start_server():
     if len(sys.argv) >= 2:
         print("138: start_server sys.argv: %s" % str(sys.argv))
         host = sys.argv[1]
         port = int(sys.argv[2])
+        hosts_list = sys.argv[3].split('#')
         bcnode = BCNode(host, port)
         bcnode.start_server()
         bcnode.receive()
@@ -192,4 +194,4 @@ def start_server(host, port, hosts_list):
 
 # # test
 # if __name__ == '__main__':
-#     start_server('127.0.0.1', 8000)
+#     start_server()

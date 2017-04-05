@@ -2,7 +2,10 @@ import socket
 import sys
 import json
 
-def route_client(host, port, pre_fix, data_dir):
+PRE_FIX_ROUTE = "[ROUTE]"
+PRE_FIX_PROCESS = "[PROCESS]"
+
+def route_client(host, port, pre_fix, data_dir, host_list=''):
     route_clt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     route_clt.settimeout(2)
 
@@ -14,10 +17,13 @@ def route_client(host, port, pre_fix, data_dir):
 
     while True:
         data = pre_fix
-        if pre_fix == '[ROUTE:]':
+        if pre_fix == PRE_FIX_ROUTE:
             data += json.dumps(data_dir)
-        elif pre_fix == '[PROCESS:]':
-            data += host + ' ' +str(data_dir)
+        elif pre_fix == PRE_FIX_PROCESS:
+            host_list_str = ''
+            for item in host_list:
+                host_list_str += item + '#'
+            data += host + '|' +str(data_dir) + '|' + host_list_str
 
         if not data:
             break
@@ -28,4 +34,3 @@ def route_client(host, port, pre_fix, data_dir):
             break
             
     route_clt.close()
-    

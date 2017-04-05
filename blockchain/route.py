@@ -7,8 +7,8 @@ import json
 
 from trade import start_server
 
-PRE_FIX_ROUTE = "[ROUTE:]"
-PRE_FIX_PROCESS = "[PROCESS:]"
+PRE_FIX_ROUTE = "[ROUTE]"
+PRE_FIX_PROCESS = "[PROCESS]"
 
 class RouteControl:
     def __init__(self, host, port_server):
@@ -49,11 +49,12 @@ class RouteControl:
                     client_sock.close()
                     break
                 elif data[0:len_process] == PRE_FIX_PROCESS:
-                    data = data[len_process:].split(' ')
+                    data = data[len_process:].split('|')
                     
                     addr_host = data[0]
                     addr_port = data[1]
-                    os.system('python trade.py %s %s &' %(addr_host, addr_port))
+                    host_list_str = data[2]
+                    os.system('python node.py %s %s &' %(addr_host, addr_port, host_list_str))
                     # start_server(addr_host, int(addr_port))
                     client_sock.send(b'success')
                     client_sock.close()
