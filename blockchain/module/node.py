@@ -3,6 +3,8 @@ import sys
 import socket
 import select
 import hashlib
+from threading import Thread
+
 import transaction
 
 PRE_FIX_TRANSACTION = '[TRANSACTION]'
@@ -187,8 +189,9 @@ def start_server():
         hosts_list = sys.argv[3].split('#')
         bcnode = BCNode(host, port)
         bcnode.start_server()
-        bcnode.receive()
-        transaction.send(bcnode, hosts_list)
+        Thread(target = bcnode.receive).start()
+        Thread(target = transaction.send, args=(bcnode, hosts_list)).start()
+        
     else:
         print('wrong parm.')
 
