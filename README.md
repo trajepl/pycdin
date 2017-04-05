@@ -14,6 +14,7 @@ we use python socket and Django to implement ``BlockChain Simulation``.
 |  timestamp |  8  |
 |  previous block hash |  64  |
 |  merkle root |  64  |
+|  rand number |  4  |
 |  data length |  4  |
 |  sum |  148  |
 |  data |  data length  |
@@ -35,6 +36,7 @@ timestamp           : Tue Mar 21 12:42:33 2017
 previous hash       : 0000000000000000000000000000000000000000000000000000000000000000
 merkle_root         : ba74546219a1f6189a511ac313bb109b5b9fe40c9bc669e87621ee7f3c198166
 data length         : 26
+rand number         : 26
 trade               : trajep create first block.
 --------------------------------------------------------------------------------------
 Magic id            : 0xdab5bffa
@@ -42,6 +44,7 @@ timestamp           : Tue Mar 21 12:42:45 2017
 previous hash       : ba74546219a1f6189a511ac313bb109b5b9fe40c9bc669e87621ee7f3c198166
 merkle_root         : bdf0dc64671b6084b973f4a9e1f5d88da63b28b514604a4029b878d3d8890f1a
 data length         : 73
+rand number         : 99991
 trade               : trajep3 create first block.
                     : trajep create 2rd block.
                     : trajep create 3th bloc
@@ -51,6 +54,7 @@ timestamp           : Tue Mar 21 12:43:02 2017
 previous hash       : bdf0dc64671b6084b973f4a9e1f5d88da63b28b514604a4029b878d3d8890f1a
 merkle_root         : 14b7e8ac1e30486a84dc04b590c20535bafe190422d6b9376967f4bde93692ce
 data length         : 73
+rand number         : 0
 trade               : trajep1 create first block.
                     : trajep create 2rd block.
                     : trajep create 3th bloc
@@ -60,6 +64,7 @@ timestamp           : Tue Mar 21 12:55:44 2017
 previous hash       : 14b7e8ac1e30486a84dc04b590c20535bafe190422d6b9376967f4bde93692ce
 merkle_root         : 14b7e8ac1e30486a84dc04b590c20535bafe190422d6b9376967f4bde93692ce
 data length         : 73
+rand number         : -243436
 trade               : trajep1 create first block.
                     : trajep create 2rd block.
                     : trajep create 3th bloc
