@@ -7,8 +7,17 @@ import json
 
 from trade import start_server
 
-PRE_FIX_ROUTE = "[ROUTE]"
-PRE_FIX_PROCESS = "[PROCESS]"
+PRE_FIX_ROUTE = '[ROUTE]'
+PRE_FIX_PROCESS = '[PROCESS]'
+BC_BASE_PATH = 'bcinfo/'
+
+def mkdir(path):
+    is_exists=os.path.exists(path)
+    if not is_exists:
+        os.makedirs(path)
+        return True
+    else:
+        return False
 
 class RouteControl:
     def __init__(self, host, port_server):
@@ -16,20 +25,27 @@ class RouteControl:
         self.PORT = port_server
         self.RECV_BUFFER = 1024
         self.MAX_LEN_CONN = 10
-        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.SERVER_SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+        self.BC_HOST_FILE = BC_BASE_PATH + str(port_server) + '/host'
+        self.set_bc_host_dir()
+    
+    def set_bc_host_dir(self):
+        tmp_dir = BC_BASE_PATH + str(port_server)
+        mkdir(tmp_dir)
+        
     def start_server(self):
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_socket.bind((self.HOST, self.PORT))
-        self.server_socket.listen(self.MAX_LEN_CONN)
+        self.SERVER_SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.SERVER_SOCKET.bind((self.HOST, self.PORT))
+        self.SERVER_SOCKET.listen(self.MAX_LEN_CONN)
 
         print('Start tcp server.')
     
-    def receive(self, ):
+    def receive(self):
         len_route = len(PRE_FIX_ROUTE)
         len_process = len(PRE_FIX_PROCESS)
         while True:
-            client_sock, add = self.server_socket.accept()
+            client_sock, add = self.SERVER_SOCKET.accept()
             
             while True:
                 data = client_sock.recv(self.RECV_BUFFER)
@@ -41,7 +57,7 @@ class RouteControl:
                     for key in route_dir:
                         origin_route_info = route_dir[key]
                         route_info = origin_route_info.split('|')[:-1]
-                        with open('host/'+key, 'w') as route_out:
+                        with open(self.BC_HOST_FILE, 'w') as route_out:
                             for info in route_info:
                                 route_out.write(info+'\n')
 

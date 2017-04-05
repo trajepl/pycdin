@@ -22,7 +22,7 @@ class BCNode:
         self.RECV_BUFFER = 4096
         self.MAX_LEN_CONN = 10
         self.FLAG_MINING = True # status of mining
-        self.UNMARK_FILE = 'unmark'
+        self.UNMARK_FILE = 'bcinfo' + str(port_server) + 'transaction'
 
         self.TRANSACTION = set() # transaction information
         self.SOCKET_LIST = []  # connection client socket_list

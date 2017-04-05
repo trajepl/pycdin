@@ -5,32 +5,34 @@ from block import Block, LEN_PRE_DATA, SPLIT_NOTE, \
 ITEM_LEN = 16 # index file length
 
 class Chain:
-    def __init__(self):
+    def __init__(self, port):
         self.blockchain = []
+        self.index_file = 'bcinfo/' + str(port) + 'index.id'
+        self.bc_file = 'bcinfo/' + str(port) + 'blockchain'
 
-    def write_block(self, block, fn, open_way):
-        with open(fn, open_way) as chain:
+    def write_block(self, block, open_way):
+        with open(self.bc_file, open_way) as chain:
             chain.write(block.bytesstr())
 
-    def update_index(self, index_item, fn, open_way):
+    def update_index(self, index_item, open_way):
         item = struct.pack('QQ', index_item[0], index_item[1])
-        with open(fn, open_way) as index:
+        with open(self.index_file, open_way) as index:
             index.write(item)
 
-    def create_first_block(self, data, fn):
+    def create_first_block(self, data):
         block = Block(data, '0000000000000000000000000000000000000000000000000000000000000000')
-        self.write_block(block, fn, 'wb')
+        self.write_block(block, 'wb')
 
-        # update index file 'index.id'
+        # update index file
         index_item = [0, 0]
-        self.update_index(index_item, 'index.id', 'wb')
+        self.update_index(index_item, self.index_file, 'wb')
 
         index_item[0] += 1
         index_item[1] = block.length + LEN_PRE_DATA
-        self.update_index(index_item, 'index.id', 'ab')
+        self.update_index(index_item, self.index_file, 'ab')
 
-    def read_chain(self, fn):
-        with open(fn, 'rb') as chain:
+    def read_chain(self):
+        with open(self.bc_file, 'rb') as chain:
             while True:
                 # read block prefix
                 block_bytes = chain.read(LEN_PRE_DATA)
@@ -55,16 +57,16 @@ class Chain:
         for block in self.blockchain:
             block.print_block()
 
-    def last_block_prefix(self, fn):
+    def last_block_prefix(self):
         index_item = []
-        with open('index.id', 'rb') as index:
+        with open(self.index_file, 'rb') as index:
             index.seek(-32, 2)
             index_item_bytes1 = index.read(ITEM_LEN)
             index_item.append(list(struct.unpack('QQ', index_item_bytes1)))
             index_item_bytes2 = index.read(ITEM_LEN)
             index_item.append(list(struct.unpack('QQ', index_item_bytes2)))
 
-        with open(fn, 'rb') as chain:
+        with open(self.bc_file, 'rb') as chain:
             chain.seek(index_item[0][1], 0)
             block_bytes = chain.read(LEN_PRE_DATA)
             block = list(struct.unpack(PACK_FORMAT, block_bytes))
@@ -73,13 +75,13 @@ class Chain:
         return block, index_item[1]
 
 
-    def new_block(self, data, fn):
-        with open('index.id', 'rb') as index:
+    def new_block(self, data):
+        with open(self.index_file, 'rb') as index:
             index.seek(-32, 2)
             index_item_bytes = index.read(ITEM_LEN)
             index_item = struct.unpack('QQ', index_item_bytes)
 
-        with open(fn, 'rb') as chain:
+        with open(self.bc_file, 'rb') as chain:
             chain.seek(index_item[1], 0)
             block_bytes = chain.read(LEN_PRE_DATA)
             block = struct.unpack(PACK_FORMAT, block_bytes)
@@ -88,8 +90,8 @@ class Chain:
             return Block(data, prev_hash)
 
 
-    def push_chain(self, data, fn):
-        block_prefix, index_item = self.last_block_prefix(fn)
+    def push_chain(self, data):
+        block_prefix, index_item = self.last_block_prefix()
         prev_hash = block_prefix[MERKLE_ROOT]
         timestamp = block_prefix[TIMESTAMP]
         block = Block(data, prev_hash, timestamp)
@@ -97,22 +99,22 @@ class Chain:
         return block
 
 
-    def add_block(self, data, fn):
-        block_prefix, index_item = self.last_block_prefix(fn)
+    def add_block(self, data):
+        block_prefix, index_item = self.last_block_prefix()
         prev_hash = block_prefix[MERKLE_ROOT]
         block = Block(data, prev_hash)
-        self.write_block(block, fn, 'ab')
+        self.write_block(block, 'ab')
 
-        # update index file 'index.id'
+        # update index file 
         len_block = block.length + LEN_PRE_DATA
         index_item[0] += 1
         index_item[1] += len_block
-        self.update_index(index_item, 'index.id', 'ab')
+        self.update_index(index_item, self.index_file, 'ab')
 
 
-    def print_index(self, fn):
+    def print_index(self, ):
         index_list = []
-        with open(fn, 'rb') as index:
+        with open(self.bc_file, 'rb') as index:
             while True:
                 index_item_bytes = index.read(ITEM_LEN)
                 if len(index_item_bytes) < ITEM_LEN:
@@ -122,17 +124,17 @@ class Chain:
         print(index_list)
 
 if __name__ == '__main__':
-    chain = Chain()
+    chain = Chain(9000)
     trade = ["trajep2 create first block.", "trajep create 2rd block.", "trajep create 3th block."]
-    chain.create_first_block('trajep create first block.', 'blockchain')
+    chain.create_first_block('trajep create first block.')
 
-    # chain.add_block(trade,  'blockchain')
+    # chain.add_block(trade)
 
-    chain.read_chain('blockchain')
+    chain.read_chain()
 
-    # chain.push_chain('trajep create 4th block.', 'blockchain')
+    # chain.push_chain('trajep create 4th block.')
 
     chain.print_chain()
-    chain.print_index('index.id')
+    # chain.print_index()
 
 

@@ -16,7 +16,7 @@ we use python socket and Django to implement ``BlockChain Simulation``.
 |  merkle root |  64  |
 |  rand number |  4  |
 |  data length |  4  |
-|  sum |  148  |
+|  sum |  152  |
 |  data |  data length  |
 
 *Note that: In this component, we use the ``Merkle Tree`` to hash the transactions of list. The details about the Mekle Tree you can see [wiki-merkle-tree](https://en.wikipedia.org/wiki/Merkle_tree)*
