@@ -267,8 +267,8 @@ def build(request):
     if count_node == 0:
 
         ROUTE_PORT = 8100
-        PRE_FIX_ROUTE = '[ROUTE:]'
-        PRE_FIX_PROCESS = '[PROCESS:]'
+        PRE_FIX_ROUTE = '[ROUTE]'
+        PRE_FIX_PROCESS = '[PROCESS]'
 
         num_node = request.POST['num_node']
         if len(num_node) == 0:
@@ -286,8 +286,8 @@ def build(request):
             addr_key = addr[0] + ":" + addr[1]
             route_dir_port = {}
             route_dir_port[addr[1]] = route_dir[addr_key]
-            # route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_ROUTE, route_dir_port)
-            # route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_PROCESS, addr[1], addr_list)
+            route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_ROUTE, route_dir_port)
+            route_client.route_client(addr[0], ROUTE_PORT, PRE_FIX_PROCESS, addr[1], addr_list)
 
     else:
         with connection.cursor() as cursor:

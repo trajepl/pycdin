@@ -10,6 +10,8 @@ import transaction
 PRE_FIX_TRANSACTION = '[TRANSACTION]'
 PRE_FIX_REQUEST = '[REQUEST_INFO]'
 PRE_FIX_BLOCK = '[BLOCK]'
+HOST_LIST_SPLIT = '#'
+HOST_SPLIT = '-'
 
 class BCNode:
     def __init__(self, host, port_server):
@@ -22,12 +24,13 @@ class BCNode:
         self.RECV_BUFFER = 4096
         self.MAX_LEN_CONN = 10
         self.FLAG_MINING = True # status of mining
-        self.UNMARK_FILE = 'bcinfo' + str(port_server) + 'transaction'
+        self.UNMARK_FILE = 'bcinfo/' + str(port_server) + '/transaction'
+        self.HOST_FILE = 'bcinfo/' + str(port_server) + '/host'
 
         self.TRANSACTION = set() # transaction information
         self.SOCKET_LIST = []  # connection client socket_list
         self.HOST_LIST = [] # one-step node
-        self.get_socket_list('host/'+str(self.PORT_SERVER)) # get the one-step node
+        self.get_socket_list(self.HOST_FILE) # get the one-step node
 
         self.DATA = ''
 
@@ -181,20 +184,28 @@ class BCNode:
         self.server_socket.close()
 
 
+def argv_format(hosts_str):
+    hosts_list = hosts_str[:-1].split(HOST_LIST_SPLIT)
+    for i in range(len(hosts_list)):
+        tmp_list = hosts_list[i].split(HOST_SPLIT)
+        hosts_list[i] = ' '.join(tmp_list)
+    return hosts_list
+
 def start_server():
     if len(sys.argv) >= 2:
-        print("138: start_server sys.argv: %s" % str(sys.argv))
+        print("186: start_server sys.argv: %s" % str(sys.argv))
         host = sys.argv[1]
         port = int(sys.argv[2])
-        hosts_list = sys.argv[3].split('#')
+        hosts_list = argv_format(sys.argv[3])
+        print(hosts_list)
         bcnode = BCNode(host, port)
         bcnode.start_server()
         Thread(target = bcnode.receive).start()
-        Thread(target = transaction.send, args=(bcnode, hosts_list)).start()
+        #Thread(target = transaction.send, args=(bcnode, hosts_list)).start()
         
     else:
         print('wrong parm.')
 
-# # test
-# if __name__ == '__main__':
-#     start_server()
+# run
+if __name__ == '__main__':
+    start_server()
