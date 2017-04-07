@@ -14,12 +14,16 @@ LENGTH = 5
 DATA = 6
 PACK_FORMAT = 'LL64s64siI' # I: [0, pow(2,32)] i: [-pow(2,32), pow(2,32)]
 SPLIT_NOTE = '|'
+RAND_RANGE = 65535*99
 
 class Block:
     def __init__(self, data, prev_hash, *argv):
+        """
+        : param: *argv(timestamp, merkle_root)
+        """
         self.magic_id = 0xDAB5BFFA
+        self.randnum = random.randint(-RAND_RANGE, RAND_RANGE)
         self.prev_hash = prev_hash.encode()
-        self.randnum = random.randint(-65535*9999, 65535*9999)
 
         if len(argv) == 0:
             self.timestamp = int(time.time())
@@ -36,21 +40,21 @@ class Block:
         if len(argv) == 2:
             self.merkle_root = argv[1].encode()
         else:
-            self.set_merkle_root() # ?
+            self.set_merkle_root()
 
     def set_data(self, data):
-        '''
+        """
         : data: list | string
-        '''
+        """
         if isinstance(data, tuple) or isinstance(data, list):
             self.data += data
         else:
             self.data.append(data)
 
     def print_data(self):
-        '''
+        """
         : format print data information
-        '''
+        """
         flag_id = 1
         for d in self.data:
             if flag_id == 1:
@@ -65,18 +69,18 @@ class Block:
         self.length -= 1
 
     def set_merkle_root(self):
-        '''
+        """
         : make merkle tree and set root
-        '''
+        """
         mt = Merkle() # default hash: sha256
         mt.add_leaf(self.data, True)
         mt.make_tree()
         self.merkle_root = mt.get_merkle_root().encode()
 
     def bytesstr(self):
-        '''
+        """
         : change class(Block) to byte(Block)
-        '''
+        """
         str_data = ""
         for item in self.data:
             str_data += item + SPLIT_NOTE
@@ -89,9 +93,9 @@ class Block:
             self.prev_hash, self.merkle_root, self.randnum, self.length, str_data.encode())
                     
     def print_block(self):
-        '''
+        """
         : format print block information
-        '''
+        """
         print('{0:20}: {1}'.format('Magic id', hex(self.magic_id)))
 
         time_format = time.asctime(time.gmtime(self.timestamp))

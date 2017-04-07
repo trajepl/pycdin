@@ -9,6 +9,7 @@ PRE_FIX_ROUTE = '[ROUTE]'
 PRE_FIX_PROCESS = '[PROCESS]'
 BC_BASE_PATH = 'bcinfo/'
 
+
 def mkdir(path):
     is_exists=os.path.exists(path)
     if not is_exists:
@@ -16,6 +17,7 @@ def mkdir(path):
         return True
     else:
         return False
+
 
 class RouteControl:
     def __init__(self, host, port_server):
@@ -79,7 +81,8 @@ class RouteControl:
                 else:
                     client_sock.send(b"Message format badly.")
                     client_sock.close()
-    
+
+
 if __name__ == "__main__":
     route = RouteControl('', 8100)
     route.start_server()

@@ -19,9 +19,9 @@ HOST_SPLIT = '-'
 
 class BCNode:
     def __init__(self, host, port_server):
-        '''
+        """
         : init socket host(string) | port_server(int)
-        '''
+        """
         self.HOST = host
         self.PORT_SERVER = port_server
 
@@ -50,9 +50,9 @@ class BCNode:
         with open(self.UNMARK_FILE, 'w') as tmp: pass
 
     def set_data(self, pre_fix, data):
-        '''
+        """
         : set data to string: pre_fix|source_addr|info
-        '''
+        """
         self.DATA = pre_fix + '|' + self.HOST + ' ' + str(self.PORT_SERVER) + '|'
         self.DATA += data if len(data) != 0 else ''
 
@@ -62,9 +62,9 @@ class BCNode:
                 self.HOST_LIST.append(line)
 
     def start_server(self):
-        '''
+        """
         : start socket server
-        '''
+        """
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # socket server
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.HOST, self.PORT_SERVER))
@@ -74,10 +74,10 @@ class BCNode:
         print('Start trade server.')
 
     def start_send(self, except_addr):
-        '''
+        """
         : start socket client
         : param: except_addr(string: ip+' '+port)
-        '''
+        """
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.settimeout(2)
 
@@ -115,9 +115,9 @@ class BCNode:
                     break
 
     def check(self, check_code, sock):
-        '''
+        """
         : check information which server receives
-        '''
+        """
         origin_data = ''
         for item in self.DATA:
             origin_data += item
@@ -126,45 +126,46 @@ class BCNode:
         return True if hash_code == check_code else False
 
     def send(self, pre_fix, data, except_addr = ''):
-        '''
+        """
         : set data information then call self.start_send to send data
-        '''
+        """
         self.set_data(pre_fix, data)
         print('> [1 sending] %s' % self.DATA)
         self.start_send(except_addr)
 
     def relay_data(self, data):
-        '''
+        """
         : relay_data
         : param: data(string:pre_fix|source_addr|transaction)
-        '''
+        """
         data_list = data.split('|')
         if data_list[2] not in self.TRANSACTION:
             self.TRANSACTION.add(data_list[2]) # store data in memory(unmark)
+            print('write %s into transaction' % data_list[2])
             with open(self.UNMARK_FILE, 'a') as transfer_io:
-                transfer_io.write(data_list[2]) # store data in disk(unmark)
+                transfer_io.write(data_list[2] + '\n') # store data in disk(unmark)
             
             if len(self.SOCKET_LIST) != 0:
-                self.send(PRE_FIX_TRANSACTION, data, data_list[1]) # relay data to one-step node
+                self.send(PRE_FIX_TRANSACTION, data_list[2], data_list[1]) # relay data to one-step node
 
     def answer_request_info(self, sock):
-        '''
+        """
         : answer_request_info
-        '''
+        """
         with open(self.UNMARK_FILE, 'r') as out:
             data = out.read()
         sock.send(data.encode())
 
     def valid_block(self, block):
-        '''
+        """
         : answer_request_info
-        '''
+        """
         pass
 
     def receive(self):
-        '''
+        """
         : receive rules in server socket
-        '''
+        """
         while True:
             ready_to_read, read_to_write, in_error = select.select(self.SOCKET_LIST, [], [], 0)
             for sock in ready_to_read:
@@ -181,7 +182,7 @@ class BCNode:
                             sock.send(check_code)
                             print('> [recv](%s@%s) receives info.' % addr)
                             check_data = sock.recv(self.RECV_BUFFER).decode() # check status
-                            if check_code == 'success':
+                            if check_data == 'success':
                                 if data.startswith(PRE_FIX_TRANSACTION):
                                     self.relay_data(data)
                                 elif data.startswith(PRE_FIX_REQUEST):
@@ -218,7 +219,7 @@ def run():
         time.sleep(10)
         Thread(target=transaction.send, args=(bcnode, hosts_list)).start()
         time.sleep(10)
-        Thread(target=mining.run, args=(bcnode)).start()
+        Thread(target=mining.run, args=(bcnode,)).start()  # note that: (,)
     else:
         print('wrong parm.')
 
@@ -231,7 +232,7 @@ def test(ip, port, host_list):
     time.sleep(10)
     Thread(target=transaction.send, args=(bcnode, hosts_list)).start()
     time.sleep(10)
-    Thread(target=mining.run, args=(bcnode)).start()
+    Thread(target=mining.run, args=(bcnode,)).start()
 
 
 if __name__ == '__main__':

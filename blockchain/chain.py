@@ -74,7 +74,6 @@ class Chain:
 
         return block, index_item[1]
 
-
     def new_block(self, data):
         with open(self.index_file, 'rb') as index:
             index.seek(-32, 2)
@@ -89,7 +88,6 @@ class Chain:
             prev_hash = block[MERKLE_ROOT].decode()
             return Block(data, prev_hash)
 
-
     def push_chain(self, data):
         block_prefix, index_item = self.last_block_prefix()
         prev_hash = block_prefix[MERKLE_ROOT]
@@ -97,7 +95,6 @@ class Chain:
         block = Block(data, prev_hash, timestamp)
         self.blockchain.append(block)
         return block
-
 
     def add_block(self, data):
         block_prefix, index_item = self.last_block_prefix()
@@ -109,12 +106,11 @@ class Chain:
         len_block = block.length + LEN_PRE_DATA
         index_item[0] += 1
         index_item[1] += len_block
-        self.update_index(index_item, self.index_file, 'ab')
-
+        self.update_index(index_item, 'ab')
 
     def print_index(self):
         index_list = []
-        with open(self.bc_file, 'rb') as index:
+        with open(self.index_file, 'rb') as index:
             while True:
                 index_item_bytes = index.read(ITEM_LEN)
                 if len(index_item_bytes) < ITEM_LEN:
@@ -122,6 +118,7 @@ class Chain:
                 index_item = struct.unpack('QQ', index_item_bytes)
                 index_list.append(index_item)
         print(index_list)
+
 
 if __name__ == '__main__':
     chain = Chain(9000)
@@ -135,6 +132,4 @@ if __name__ == '__main__':
     # chain.push_chain('trajep create 4th block.')
 
     chain.print_chain()
-    # chain.print_index()
-
-
+    chain.print_index()
