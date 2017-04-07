@@ -70,8 +70,8 @@ class RouteControl:
                     addr_host = data[0]
                     host_list_str = data[2]
                     addr_port = data[1]
-                    # print('python node.py %s %s %s &' %(addr_host, addr_port, host_list_str))
-                    os.system('python node.py %s %s %s&' %(addr_host, addr_port, host_list_str))
+                    print('python node.py %s %s %s &' %(addr_host, addr_port, host_list_str))
+                    os.system('python node.py %s %s %s &' %(addr_host, addr_port, host_list_str))
 
                     client_sock.send(b'success')
                     client_sock.close()
@@ -81,6 +81,6 @@ class RouteControl:
                     client_sock.close()
     
 if __name__ == "__main__":
-    route = RouteControl('127.0.0.1', 8100)
+    route = RouteControl('', 8100)
     route.start_server()
     route.receive()

@@ -7,8 +7,8 @@ ITEM_LEN = 16 # index file length
 class Chain:
     def __init__(self, port):
         self.blockchain = []
-        self.index_file = 'bcinfo/' + str(port) + 'index.id'
-        self.bc_file = 'bcinfo/' + str(port) + 'blockchain'
+        self.index_file = 'bcinfo/' + str(port) + '/index.id'
+        self.bc_file = 'bcinfo/' + str(port) + '/blockchain'
 
     def write_block(self, block, open_way):
         with open(self.bc_file, open_way) as chain:
@@ -25,11 +25,11 @@ class Chain:
 
         # update index file
         index_item = [0, 0]
-        self.update_index(index_item, self.index_file, 'wb')
+        self.update_index(index_item, 'wb')
 
         index_item[0] += 1
         index_item[1] = block.length + LEN_PRE_DATA
-        self.update_index(index_item, self.index_file, 'ab')
+        self.update_index(index_item, 'ab')
 
     def read_chain(self):
         with open(self.bc_file, 'rb') as chain:
@@ -112,7 +112,7 @@ class Chain:
         self.update_index(index_item, self.index_file, 'ab')
 
 
-    def print_index(self, ):
+    def print_index(self):
         index_list = []
         with open(self.bc_file, 'rb') as index:
             while True:

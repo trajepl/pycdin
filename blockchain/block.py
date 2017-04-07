@@ -53,8 +53,10 @@ class Block:
         '''
         flag_id = 1
         for d in self.data:
-            print('{0:20}: {1}'.format('trade', d)) if flag_id == 1 \
-                else print('{0:20}: {1}'.format('', d))
+            if flag_id == 1:
+                print('{0:20}: {1}'.format('trade', d))
+            else:
+                print('{0:20}: {1}'.format('', d))
             flag_id += 1
     
     def set_length(self):

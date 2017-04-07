@@ -1,10 +1,14 @@
 # trade simulation
+import os
 import sys
+import time
 import socket
 import select
 import hashlib
 from threading import Thread
 
+import chain
+import mining
 import transaction
 
 PRE_FIX_TRANSACTION = '[TRANSACTION]'
@@ -25,7 +29,10 @@ class BCNode:
         self.MAX_LEN_CONN = 10
         self.FLAG_MINING = True # status of mining
         self.UNMARK_FILE = 'bcinfo/' + str(port_server) + '/transaction'
+        self.BC_FILE = 'bcinfo/' + str(port_server) + '/blockchain'
+        self.BC_INDEX_FILE = 'bcinfo/' + str(port_server) + '/index.id'     
         self.HOST_FILE = 'bcinfo/' + str(port_server) + '/host'
+        self.set_file() # create blockchain and index.id file and transaction
 
         self.TRANSACTION = set() # transaction information
         self.SOCKET_LIST = []  # connection client socket_list
@@ -34,11 +41,19 @@ class BCNode:
 
         self.DATA = ''
 
+        self.blockchain = chain.Chain(self.PORT_SERVER)
+        self.blockchain.create_first_block('first transaction.')
+
+    def set_file(self):
+        with open(self.BC_FILE, 'w') as tmp: pass
+        with open(self.BC_INDEX_FILE, 'w') as tmp: pass
+        with open(self.UNMARK_FILE, 'w') as tmp: pass
+
     def set_data(self, pre_fix, data):
         '''
         : set data to string: pre_fix|source_addr|info
         '''
-        self.DATA = pre_fix + '|' + self.HOST + ' ' + self.PORT_SERVER + '|'
+        self.DATA = pre_fix + '|' + self.HOST + ' ' + str(self.PORT_SERVER) + '|'
         self.DATA += data if len(data) != 0 else ''
 
     def get_socket_list(self, fn):
@@ -58,7 +73,7 @@ class BCNode:
         self.SOCKET_LIST.append(self.server_socket)
         print('Start trade server.')
 
-    def start_send(self):
+    def start_send(self, except_addr):
         '''
         : start socket client
         : param: except_addr(string: ip+' '+port)
@@ -77,7 +92,7 @@ class BCNode:
             #     continue # except itself
             
             while True:
-                print("$ [2 send to]: %s" % host)
+                print("> [2 send to %s]" % host)
                 try:
                     self.client_socket.connect(tuple(host))
                     self.client_socket.send(self.DATA.encode())
@@ -118,17 +133,17 @@ class BCNode:
         print('> [1 sending] %s' % self.DATA)
         self.start_send(except_addr)
 
-    def relay_data(self, transfer_io, data):
+    def relay_data(self, data):
         '''
         : relay_data
         : param: data(string:pre_fix|source_addr|transaction)
         '''
         data_list = data.split('|')
-        if data_list not in self.TRANSACTION:
+        if data_list[2] not in self.TRANSACTION:
             self.TRANSACTION.add(data_list[2]) # store data in memory(unmark)
-            transfer_io.write(data_list[2]) # store data in disk(unmark)
-            transfer_io.flush()
-
+            with open(self.UNMARK_FILE, 'a') as transfer_io:
+                transfer_io.write(data_list[2]) # store data in disk(unmark)
+            
             if len(self.SOCKET_LIST) != 0:
                 self.send(PRE_FIX_TRANSACTION, data, data_list[1]) # relay data to one-step node
 
@@ -150,8 +165,6 @@ class BCNode:
         '''
         : receive rules in server socket
         '''
-        transfer_io = open(self.UNMARK_FILE, 'a')
-
         while True:
             ready_to_read, read_to_write, in_error = select.select(self.SOCKET_LIST, [], [], 0)
             for sock in ready_to_read:
@@ -170,7 +183,7 @@ class BCNode:
                             check_data = sock.recv(self.RECV_BUFFER).decode() # check status
                             if check_code == 'success':
                                 if data.startswith(PRE_FIX_TRANSACTION):
-                                    self.relay_data(transfer_io, data)
+                                    self.relay_data(data)
                                 elif data.startswith(PRE_FIX_REQUEST):
                                     self.answer_request_info(sock)
                                 elif data.startswith(PRE_FIX_BLOCK):
@@ -191,7 +204,8 @@ def argv_format(hosts_str):
         hosts_list[i] = ' '.join(tmp_list)
     return hosts_list
 
-def start_server():
+
+def run():
     if len(sys.argv) >= 2:
         print("186: start_server sys.argv: %s" % str(sys.argv))
         host = sys.argv[1]
@@ -200,12 +214,26 @@ def start_server():
         print(hosts_list)
         bcnode = BCNode(host, port)
         bcnode.start_server()
-        Thread(target = bcnode.receive).start()
-        #Thread(target = transaction.send, args=(bcnode, hosts_list)).start()
-        
+        Thread(target=bcnode.receive).start()
+        time.sleep(10)
+        Thread(target=transaction.send, args=(bcnode, hosts_list)).start()
+        time.sleep(10)
+        Thread(target=mining.run, args=(bcnode)).start()
     else:
         print('wrong parm.')
 
-# run
+
+def test(ip, port, host_list):
+    hosts_list = argv_format(host_list)
+    bcnode = BCNode(ip, port)
+    bcnode.start_server()
+    Thread(target=bcnode.receive).start()
+    time.sleep(10)
+    Thread(target=transaction.send, args=(bcnode, hosts_list)).start()
+    time.sleep(10)
+    Thread(target=mining.run, args=(bcnode)).start()
+
+
 if __name__ == '__main__':
-    start_server()
+    run() # run
+    # test('', 9000, '127.0.0.1-9000#127.0.0.1-9002#127.0.0.1-9003#') # test
