@@ -1,6 +1,6 @@
 import struct
 from block import Block, LEN_PRE_DATA, SPLIT_NOTE, \
-    PREV_HASH, MERKLE_ROOT, LENGTH, PACK_FORMAT, TIMESTAMP
+    PREV_HASH, MERKLE_ROOT, LENGTH, PACK_FORMAT, TIMESTAMP, RAND_NUM
 
 ITEM_LEN = 16 # index file length
 
@@ -44,6 +44,7 @@ class Chain:
                 prev_hash = block[PREV_HASH].decode()
                 merkle_root = block[MERKLE_ROOT].decode()
                 timestamp = block[TIMESTAMP]
+                randnum = block[RAND_NUM]
 
                 # read block data
                 data_bytes = chain.read(data_len)
@@ -51,7 +52,7 @@ class Chain:
                 data = data.split(SPLIT_NOTE)
 
                 block.append(data)
-                self.blockchain.append(Block(data, prev_hash, timestamp, merkle_root))
+                self.blockchain.append(Block(data, prev_hash, timestamp, merkle_root, randnum))
 
     def print_chain(self):
         for block in self.blockchain:

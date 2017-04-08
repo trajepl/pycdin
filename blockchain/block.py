@@ -22,14 +22,12 @@ class Block:
         : param: *argv(timestamp, merkle_root)
         """
         self.magic_id = 0xDAB5BFFA
-        self.randnum = random.randint(-RAND_RANGE, RAND_RANGE)
         self.prev_hash = prev_hash.encode()
 
-        if len(argv) == 0:
-            self.timestamp = int(time.time())
-        else:
-            self.timestamp = argv[0]  # t = time.gmtime(timestamp) time.asctime(t)
-
+        # t = time.gmtime(timestamp) time.asctime(t)
+        self.timestamp = int(time.time()) if len(argv) == 0 else argv[0]
+        self.randnum = random.randint(-RAND_RANGE, RAND_RANGE) if len(argv) < 3 else argv[2]
+        
         self.data = list()
         self.set_data(data)  # string of list
 

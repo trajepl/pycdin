@@ -7,6 +7,7 @@ BC_FILE = 'blockchain'
 
 def mining(bcnode):
     transaction_list = read_unmark_clear(bcnode)
+    if len(transaction_list) == 0: return
     bcnode.blockchain.add_block(transaction_list)
 
 
