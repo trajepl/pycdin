@@ -14,6 +14,20 @@ class Chain:
         with open(self.bc_file, open_way) as chain:
             chain.write(block.bytesstr())
 
+    def write_exist_block(self, block, data_len ,open_way):
+        with open(self.bc_file, open_way) as chain:
+            chain.write(block)
+
+        # update index file
+        index_item = []
+        with open(self.index_file, 'rb') as index:
+            index.seek(-ITEM_LEN, 2)
+            index_item_bytes = index.read(ITEM_LEN)
+            index_item.append(list(struct.unpack('QQ', index_item_bytes1)))
+        index_item[0] += 1
+        index_item[1] += data_len
+        self.update_index(index_item, 'ab')
+
     def update_index(self, index_item, open_way):
         item = struct.pack('QQ', index_item[0], index_item[1])
         with open(self.index_file, open_way) as index:

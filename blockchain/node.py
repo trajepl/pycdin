@@ -166,7 +166,7 @@ class BCNode:
         b_data = struct.unpack(str(len_data)+'s', block[chain:LEN_PRE_DATA:].encode())
         b_data_list = b_data.split('|')
         len_transaction = len(b_data_list)
-        
+
         if len(self.TRANSACTION) != len_transaction:
             pass
         else:
@@ -178,7 +178,8 @@ class BCNode:
             check_merkle_root = block_prefix[chain.MERKLE_ROOT]
 
             if check_merkle_root == tmp_merkle_root:
-                self.blockchain.write_block(block.encode(), 'ab')
+                self.blockchain.write_exist_block(block.encode(), 'ab', len_data)
+
                 self.TRANSACTION = set(list(self.TRANSACTION)[len_transaction:])
                 with open(self.UNMARK_FILE, 'w') as tmp: 
                     for item in self.TRANSACTION:
