@@ -14,7 +14,7 @@ LENGTH = 5
 DATA = 6
 PACK_FORMAT = 'LL64s64siI' # I: [0, pow(2,32)] i: [-pow(2,32), pow(2,32)]
 SPLIT_NOTE = '|'
-RAND_RANGE = 65535*99
+RAND_RANGE = 65535*9999
 
 class Block:
     def __init__(self, data, prev_hash, *argv):

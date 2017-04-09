@@ -8,6 +8,7 @@ import hashlib
 from threading import Thread
 
 import chain
+import merkle
 import mining
 import transaction
 
@@ -125,7 +126,7 @@ class BCNode:
     
         return True if hash_code == check_code else False
 
-    def send(self, pre_fix, data, except_addr = ''):
+    def send(self, pre_fix, data, except_addr=''):
         """
         : set data information then call self.start_send to send data
         """
@@ -158,9 +159,32 @@ class BCNode:
 
     def valid_block(self, block):
         """
-        : answer_request_info
+        : valide block merkle_root
         """
-        pass
+        block_prefix = struct.unpack(chain.PACK_FORMAT, block[:chain.LEN_PRE_DATA].encode())
+        len_data = block_prefix[chain.LENGTH]
+        b_data = struct.unpack(str(len_data)+'s', block[chain:LEN_PRE_DATA:].encode())
+        b_data_list = b_data.split('|')
+        len_transaction = len(b_data_list)
+        
+        if len(self.TRANSACTION) != len_transaction:
+            pass
+        else:
+            tmp_merkle = Merkle()
+            tmp_merkle.add_leaf(self.TRANSACTION, True)
+            tmp_merkle.make_tree()
+            tmp_merkle_root = tmp_merkle.get_merkle_root()
+
+            check_merkle_root = block_prefix[chain.MERKLE_ROOT]
+
+            if check_merkle_root == tmp_merkle_root:
+                self.blockchain.write_block(block.encode(), 'ab')
+                self.TRANSACTION = set(list(self.TRANSACTION)[len_transaction:])
+                with open(self.UNMARK_FILE, 'w') as tmp: 
+                    for item in self.TRANSACTION:
+                        tmp.write(item+'\n')
+            
+            self.send(PRE_FIX_BLOCK, block.decode())
 
     def receive(self):
         """
