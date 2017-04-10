@@ -6,7 +6,10 @@ ITEM_LEN = 16 # index file length
 
 class Chain:
     def __init__(self, port):
+        null_merkle_root = '0000000000000000000000000000000000000000000000000000000000000000'
         self.blockchain = []
+        self.head_point = [{null_merkle_root:[]}]
+        self.tail_point = []
         self.index_file = 'bcinfo/' + str(port) + '/index.id'
         self.bc_file = 'bcinfo/' + str(port) + '/blockchain'
 
@@ -34,7 +37,8 @@ class Chain:
             index.write(item)
 
     def create_first_block(self, data):
-        block = Block(data, '0000000000000000000000000000000000000000000000000000000000000000')
+        null_merkle_root = '0000000000000000000000000000000000000000000000000000000000000000'
+        block = Block(data, null_merkle_root)
         self.write_block(block, 'wb')
 
         # update index file
@@ -45,7 +49,10 @@ class Chain:
         index_item[1] = block.length + LEN_PRE_DATA
         self.update_index(index_item, 'ab')
 
+        self.head_point[0][null_merkle_root].append(dict(block.merkle_root.decode(), [])
+        self.tail_point = self.head_point[0][null_merkle_root]
     def read_chain(self):
+        is_first = True
         with open(self.bc_file, 'rb') as chain:
             while True:
                 # read block prefix
@@ -67,6 +74,19 @@ class Chain:
 
                 block.append(data)
                 self.blockchain.append(Block(data, prev_hash, timestamp, merkle_root, randnum))
+
+                if is_first:
+                    self.head_point[0][prev_hash].append(dict(merkle_root, [])
+                    self.tail_point = self.head_point[0][prev_hash]
+                    is_first = not is_first
+                    continue
+                
+                tail_tmp = self.tail_point
+                for point in tail_tmp:
+                    if point[prev_hash] not None:
+                        self.tail_point.append(dict(prev_hash, []))
+                
+                
 
     def print_chain(self):
         for block in self.blockchain:
