@@ -51,6 +51,7 @@ class Chain:
 
         self.head_point[0][null_merkle_root].append(dict(block.merkle_root.decode(), [])
         self.tail_point = self.head_point[0][null_merkle_root]
+
     def read_chain(self):
         is_first = True
         with open(self.bc_file, 'rb') as chain:
@@ -82,10 +83,11 @@ class Chain:
                     continue
                 
                 tail_tmp = self.tail_point
-                for point in tail_tmp:
-                    if point[prev_hash] not None:
-                        self.tail_point.append(dict(prev_hash, []))
-                
+                for i, point in enumerate(tail_tmp):
+                    if len(point[prev_hash]) == 0:
+                        self.tail_point[i][prev_hash].append(dict(merkle_root, []))
+                        
+       
                 
 
     def print_chain(self):
