@@ -1,15 +1,15 @@
 # trade simulation
-import os
+import hashlib
+import select
+import socket
+import struct
 import sys
 import time
-import socket
-import select
-import hashlib
 from threading import Thread
 
 import chain
-import merkle
 import mining
+import merkle
 import transaction
 
 PRE_FIX_TRANSACTION = '[TRANSACTION]'
@@ -159,31 +159,39 @@ class BCNode:
 
     def valid_block(self, block):
         """
-        : valide block merkle_root
+        : valid block merkle_root
         """
         block_prefix = struct.unpack(chain.PACK_FORMAT, block[:chain.LEN_PRE_DATA].encode())
         len_data = block_prefix[chain.LENGTH]
-        b_data = struct.unpack(str(len_data)+'s', block[chain:LEN_PRE_DATA:].encode())
+        b_data = struct.unpack(str(len_data)+'s', block[chain.LEN_PRE_DATA:].encode())
         b_data_list = b_data.split('|')
         len_transaction = len(b_data_list)
 
         if len(self.TRANSACTION) != len_transaction:
             pass
         else:
-            tmp_merkle = Merkle()
-            tmp_merkle.add_leaf(self.TRANSACTION, True)
-            tmp_merkle.make_tree()
-            tmp_merkle_root = tmp_merkle.get_merkle_root()
+            '''
+            : when the merkle_root same pass.(order same)
+            '''
+            last_block = self.blockchain.last_block()
+            data = last_block[-1]
+            for item in self.TRANSACTION:
+                if item not in data:
+                    return
+            # tmp_merkle = merkle.Merkle()
+            # tmp_merkle.add_leaf(self.TRANSACTION, True)
+            # tmp_merkle.make_tree()
+            # tmp_merkle_root = tmp_merkle.get_merkle_root()
+            #
+            # check_merkle_root = block_prefix[chain.MERKLE_ROOT]
+            #
+            # if check_merkle_root == tmp_merkle_root:
+            self.blockchain.write_exist_block(block.encode(), 'ab', len_data)
 
-            check_merkle_root = block_prefix[chain.MERKLE_ROOT]
-
-            if check_merkle_root == tmp_merkle_root:
-                self.blockchain.write_exist_block(block.encode(), 'ab', len_data)
-
-                self.TRANSACTION = set(list(self.TRANSACTION)[len_transaction:])
-                with open(self.UNMARK_FILE, 'w') as tmp: 
-                    for item in self.TRANSACTION:
-                        tmp.write(item+'\n')
+            self.TRANSACTION = set(list(self.TRANSACTION)[len_transaction:])
+            with open(self.UNMARK_FILE, 'w') as tmp:
+                for item in self.TRANSACTION:
+                    tmp.write(item+'\n')
             
             self.send(PRE_FIX_BLOCK, block.decode())
 

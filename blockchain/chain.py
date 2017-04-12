@@ -1,15 +1,18 @@
 import struct
-from block import Block, LEN_PRE_DATA, SPLIT_NOTE, PRE_FIX_LIST, \
+from block import Block, LEN_PRE_DATA, SPLIT_NOTE, \
     PREV_HASH, MERKLE_ROOT, LENGTH, PACK_FORMAT, TIMESTAMP, RAND_NUM
 
-ITEM_LEN = 16 # index file length
+ITEM_LEN = 16  # index file length
+MAX_BRANCHING_LEN = 6  # max branching len
 
 class Chain:
     def __init__(self, port):
-        null_merkle_root = '0000000000000000000000000000000000000000000000000000000000000000'
         self.blockchain = []
-        self.head_point = [{null_merkle_root:[]}]
-        self.tail_point = []
+
+        # null_merkle_root = '0000000000000000000000000000000000000000000000000000000000000000'
+        # self.head_point = [{null_merkle_root:[]}]
+        # self.tail_point = []
+
         self.index_file = 'bcinfo/' + str(port) + '/index.id'
         self.bc_file = 'bcinfo/' + str(port) + '/blockchain'
 
@@ -26,7 +29,7 @@ class Chain:
         with open(self.index_file, 'rb') as index:
             index.seek(-ITEM_LEN, 2)
             index_item_bytes = index.read(ITEM_LEN)
-            index_item.append(list(struct.unpack('QQ', index_item_bytes1)))
+            index_item.append(list(struct.unpack('QQ', index_item_bytes)))
         index_item[0] += 1
         index_item[1] += data_len
         self.update_index(index_item, 'ab')
@@ -49,8 +52,8 @@ class Chain:
         index_item[1] = block.length + LEN_PRE_DATA
         self.update_index(index_item, 'ab')
 
-        self.head_point[0][null_merkle_root].append(dict(block.merkle_root.decode(), [])
-        self.tail_point = self.head_point[0][null_merkle_root]
+        # self.head_point[0][null_merkle_root].append(dict(block.merkle_root.decode(), []))
+        # self.tail_point = self.head_point[0][null_merkle_root]
 
     def read_chain(self):
         is_first = True
@@ -76,19 +79,16 @@ class Chain:
                 block.append(data)
                 self.blockchain.append(Block(data, prev_hash, timestamp, merkle_root, randnum))
 
-                if is_first:
-                    self.head_point[0][prev_hash].append(dict(merkle_root, [])
-                    self.tail_point = self.head_point[0][prev_hash]
-                    is_first = not is_first
-                    continue
-                
-                tail_tmp = self.tail_point
-                for i, point in enumerate(tail_tmp):
-                    if len(point[prev_hash]) == 0:
-                        self.tail_point[i][prev_hash].append(dict(merkle_root, []))
-                        
-       
-                
+                # if is_first:
+                #     self.head_point[0][prev_hash].append(dict(merkle_root, []))
+                #     self.tail_point = self.head_point[0][prev_hash]
+                #     is_first = not is_first
+                #     continue
+                #
+                # tail_tmp = self.tail_point
+                # for i, point in enumerate(tail_tmp):
+                #     if len(point[prev_hash]) == 0:
+                #         self.tail_point[i][prev_hash].append(dict(merkle_root, []))
 
     def print_chain(self):
         for block in self.blockchain:
@@ -97,7 +97,26 @@ class Chain:
     def last_block_prefix(self):
         index_item = []
         with open(self.index_file, 'rb') as index:
-            index.seek(-32, 2)
+            index.seek(-16 * 3, 2)
+            index_item_bytes1 = index.read(ITEM_LEN)
+            index_item.append(list(struct.unpack('QQ', index_item_bytes1)))
+            index_item_bytes2 = index.read(ITEM_LEN)
+            index_item.append(list(struct.unpack('QQ', index_item_bytes2)))
+            # index_item_bytes3 = index.read(ITEM_LEN)
+            # index_item.append(list(struct.unpack('QQ', index_item_bytes3)))
+
+        with open(self.bc_file, 'rb') as chain:
+            chain.seek(index_item[0][1], 0)
+            block_bytes = chain.read(LEN_PRE_DATA)
+            block = list(struct.unpack(PACK_FORMAT, block_bytes))
+            block[MERKLE_ROOT] = block[MERKLE_ROOT].decode()
+
+        return block, index_item[1]
+
+    def last_block(self):
+        index_item = []
+        with open(self.index_file, 'rb') as index:
+            index.seek(-16 * 3, 2)
             index_item_bytes1 = index.read(ITEM_LEN)
             index_item.append(list(struct.unpack('QQ', index_item_bytes1)))
             index_item_bytes2 = index.read(ITEM_LEN)
@@ -107,9 +126,12 @@ class Chain:
             chain.seek(index_item[0][1], 0)
             block_bytes = chain.read(LEN_PRE_DATA)
             block = list(struct.unpack(PACK_FORMAT, block_bytes))
+            len_data = block[LENGTH]
+            data = chain.read(len_data)
             block[MERKLE_ROOT] = block[MERKLE_ROOT].decode()
+            block.append(data)
 
-        return block, index_item[1]
+        return block
 
     def new_block(self, data):
         with open(self.index_file, 'rb') as index:
