@@ -39,6 +39,9 @@ urlpatterns = [
     # build network
     url(r'^build$', views.build, name='build'),
 
+    # blockchain information visual
+    url(r'^show$', views.show, name='show'),
+
     # auth manage
     url(r'^admin/', admin.site.urls),
 ]

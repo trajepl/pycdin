@@ -3,8 +3,9 @@ from django.shortcuts import render
 from django.db import connection
 import blockchain.models as BCModels
 import hashlib
+import json
 
-from . import gengraph, route_client
+from . import gengraph, route_client, chain
 
 def active(func):
     def wrapper(*args, **kw):
@@ -301,24 +302,41 @@ def build(request):
     }
     return render(request, "blockchain/simulation.html", content)
 
+last_index = []
+@active
+def show(request):
+    # return all of the current block info
+    port = 9999 # to do
+    global last_index
 
+    bc_ins = chain.Chain(port)
+    bc_ins.read_chain()
+    last_index = bc_ins.last_index(0)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return JsonResponse(bc_ins.blockchain)
+      
+@active
+def new_block(request):
+    # accept new block
+    # return new block to front-end
+    global last_index
+    port = 9999 # to do
+    ret_list = []
+    tmp_chain = chain.Chain(port)
+    last_index_cur = chain.Chain(port).last_block(0)
+    index = [last_index_cur]
+    id = 1
+    while last_index_cur != last_index:
+        last_index_cur = tmp_chain.last_index(id)
+        index.append(last_index_cur)
+        id += 1
+    index.append(last_index)
+    last_index = index[0]
+    
+    for item in index[1:]:
+        ret_list.append(tmp_chain.read_chain_index(item))
+    
+    return JsonResponse(ret_list)  
 
 
 
