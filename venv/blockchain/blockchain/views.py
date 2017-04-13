@@ -5,7 +5,7 @@ import blockchain.models as BCModels
 import hashlib
 import json
 
-from . import gengraph, route_client, chain
+from . import gengraph, route_client, chain, block
 
 def active(func):
     def wrapper(*args, **kw):
@@ -338,6 +338,10 @@ def new_block(request):
     
     return JsonResponse(ret_list)  
 
+#debug
+@active
+def visual(request):
+    return render(request, 'blockchain/visual.html')
 
 
 

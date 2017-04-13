@@ -2,7 +2,7 @@ import time
 import struct
 import random
 import hashlib
-from merkle import Merkle
+from .merkle import Merkle
 
 LEN_PRE_DATA = 152
 MAGIC_ID = 0

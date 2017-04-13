@@ -1,5 +1,5 @@
 import struct
-from block import Block, LEN_PRE_DATA, SPLIT_NOTE, \
+from .block import Block, LEN_PRE_DATA, SPLIT_NOTE, \
     PREV_HASH, MERKLE_ROOT, LENGTH, PACK_FORMAT, TIMESTAMP, RAND_NUM
 
 ITEM_LEN = 16  # index file length

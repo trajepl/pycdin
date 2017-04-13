@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta name="keywords" content="[keywords]" />
+	<meta name="description" content="[description]"/>
+	<meta http-equiv="Cache-Control" content="no-transform" /> 
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    {% load static %}
+	<title>blockchain</title>
+
+    <link rel="stylesheet" href="{% static '/blockchain/css/common.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/admin.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static '/common/DataTables-1.10.8/css/jquery.dataTables.css' %}">
+	<link rel="stylesheet" href="{% static '/common/font-awesome-4.5.0/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static '/blockchain/css/style.css' %}">
+	<script type="text/javascript" src="{% static '/blockchain/plugins/jquery-1.11.2.js' %}"></script>
+    <script type="text/javascript" src="{% static '/blockchain/plugins/echarts.min.js' %}"></script>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 1000px;height:800px;"></div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // 指定图表的配置项和数据
+        var symbol_size = 40;
+        var nodes = [
+            {
+                draggable : true,
+                itemStyle : null, 
+                name      : 1, 
+                symbolSize: symbol_size,
+                value     : 10,
+                x         : null, 
+                y         : null,
+                category  : 0,
+            },    
+            {
+                draggable : true,
+                itemStyle : null, 
+                name      : 2, 
+                symbolSize: symbol_size,
+                value     : 10,
+                x         : null, 
+                y         : null,
+                category  : 0,
+            },        
+            {
+                draggable : true,
+                itemStyle : null, 
+                name      : 3, 
+                symbolSize: symbol_size,
+                value     : 10,
+                x         : null, 
+                y         : null,
+                category  : 0,
+            },    
+            {
+                draggable : true,
+                itemStyle : null, 
+                name      : 4, 
+                symbolSize: symbol_size,
+                value     : 10,
+                x         : null, 
+                category  : 1,
+            },    
+            {
+                draggable : true,
+                itemStyle : null, 
+                name      : 5, 
+                symbolSize: symbol_size,
+                value     : 10,
+                x         : null, 
+                y         : null,
+                category  : 1,
+            },
+        ];
+        var links = [
+            {   
+                id     : 0,
+                source : 0, 
+                target : 1,     
+            },
+            {   
+                id     : 1,
+                source : 1, 
+                target : 2,
+            },
+            {   
+                id     : 2,
+                source : 2, 
+                target : 4,
+            },
+            {   
+                id     : 2,
+                source : 2, 
+                target : 3,
+            },
+            {   
+                id     : 3,
+                source : 3, 
+                target : 5,
+            },        
+        ];
+        var graph = {
+            'nodes' : nodes, 
+            'links' : links,
+        };
+        var categories = [{'name' : 'block'}, {'name' : 'island'}];
+        // graph.nodes.forEach(function (node) {
+        //     node.itemStyle = null;
+        //     node.symbolSize = 10;
+        //     node.value = node.symbolSize;
+        //     node.category = node.attributes.modularity_class;
+        //     // Use random x, y
+        //     node.x = node.y = null;
+        //     node.draggable = true;
+        // });
+        option = {
+            title: {
+                text: 'blockchain',
+                top: 'bottom',
+                left: 'right'
+            },
+            tooltip: {},
+            legend: [{
+                // selectedMode: 'single',
+                data: categories.map(function (a) {
+                    return a.name;
+                })
+            }],
+            animation: false,
+            series : [
+                {
+                    name: 'blockchain',
+                    type: 'graph',
+                    layout: 'force',
+                    data: graph.nodes,
+                    links: graph.links,
+                    categories: categories,
+                    edgeSymbol: ['circle', 'arrow'],
+                    edgeSymbolSize: [4, 10],
+                    roam: true,
+                    label: {
+                        normal: {
+                            show    : true,
+                        }
+                    },
+                    lineStyle : {
+                        normal: {
+                            color: 'black',
+                        }
+                    },       
+                    force: {
+                        repulsion: 1000,
+                        edgeLength: [50, 100]
+                    }
+                }
+            ]
+        };
+
+        myChart.setOption(option);
+    </script>
+</body>
+</html>
+
