@@ -13,8 +13,8 @@ class Chain:
         # self.head_point = [{null_merkle_root:[]}]
         # self.tail_point = []
 
-        self.index_file = 'bcinfo/' + str(port) + '/index.id'
-        self.bc_file = 'bcinfo/' + str(port) + '/blockchain'
+        self.index_file = 'blockchain/bcinfo/' + str(port) + '/index.id'
+        self.bc_file = 'blockchain/bcinfo/' + str(port) + '/blockchain'
 
     def write_block(self, block, open_way):
         with open(self.bc_file, open_way) as chain:
