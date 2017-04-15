@@ -35,7 +35,7 @@ class Block:
         self.set_length()
         
         self.merkle_root = None
-        if len(argv) == 2:
+        if len(argv) >= 2:
             self.merkle_root = argv[1].encode()
         else:
             self.set_merkle_root()

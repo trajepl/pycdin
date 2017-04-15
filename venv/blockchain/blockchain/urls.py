@@ -41,7 +41,9 @@ urlpatterns = [
 
     # blockchain information visual
     url(r'^show$', views.show, name='show'),
+    url(r'^new_block$', views.new_block, name='new_block'),
     url(r'^visual$', views.visual, name='visual'), # debug
+    url(r'^addBlock$', views.add_new_block, name='addBlock'), # debug
 
     # auth manage
     url(r'^admin/', admin.site.urls),

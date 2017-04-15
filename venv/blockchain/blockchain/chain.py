@@ -173,20 +173,25 @@ class Chain:
     def last_index(self, plus):
         index_item = []
         with open(self.index_file, 'rb') as index:
-            index.seek(-ITEM_LEN*(1+plus), 2)
+            offset = -ITEM_LEN * (1 + plus)
+            index.seek(offset, 2)
             index_item_bytes = index.read(ITEM_LEN)
             index_item = struct.unpack('QQ', index_item_bytes)
         return index_item
 
     def read_chain_index(self, index):
-        with open(self.bc_file, 'ab') as bc_in:
-            bc_index.seek(index[1])
+        with open(self.bc_file, 'rb') as bc_in:
+            bc_in.seek(index[1], 0)
             block_bytes = bc_in.read(LEN_PRE_DATA)
-            block = struct.unpack(PACK_FORMAT, block_bytes)
+            block = list(struct.unpack(PACK_FORMAT, block_bytes))
+            block[PREV_HASH] = block[PREV_HASH].decode()
+            block[MERKLE_ROOT] = block[MERKLE_ROOT].decode()
 
-            len_data = block[LENGTH]
-            data = bc_index.read(len_data)
-        return Block(data, block[PREV_HASH], block[TIMESTAMP], block[RAND_NUM])
+            data_len = block[LENGTH]
+            data_bytes = bc_in.read(data_len)
+            data = struct.unpack(str(data_len) + 's', data_bytes)[0].decode()
+            data = data.split(SPLIT_NOTE)
+        return Block(data, block[PREV_HASH], block[TIMESTAMP], block[MERKLE_ROOT], block[RAND_NUM])
 
     def print_index(self):
         index_list = []

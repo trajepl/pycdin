@@ -4,6 +4,7 @@ from django.db import connection
 import blockchain.models as BCModels
 import hashlib
 import json
+import time
 
 from . import gengraph, route_client, chain, block
 
@@ -302,46 +303,135 @@ def build(request):
     }
     return render(request, "blockchain/simulation.html", content)
 
-last_index = []
+def class_to_dict(obj):
+    is_list = obj.__class__ == [].__class__
+    is_set = obj.__class__ == set().__class__
+    if is_list or is_set:
+        obj_arr = []
+        for o in obj:
+            #把Object对象转换成Dict对象
+            dict = {}
+            dict.update(o.__dict__)
+            obj_arr.append(dict)
+        return obj_arr
+    else:
+        dict = {}
+        dict.update(obj.__dict__)
+    return dict
+
+def format_blockchain(blockchain_tmp, hash_dict, id_tmp = 0):
+    nodes = []
+    links = []
+    for item in blockchain_tmp:
+        t = time.gmtime(int(item['timestamp']))
+        item['timestamp'] = time.asctime(t)
+        item_tmp = {}
+        item_tmp['name'] = id_tmp
+        item_tmp['value'] = item
+        item_tmp['draggable'] = True
+        item_tmp['symbolSize'] = 40
+        item_tmp['category'] = 0
+        item_tmp['x'] = None
+        item_tmp['y'] = None
+
+        if id_tmp == 0: 
+            id_tmp += 1
+            continue
+        link_tmp = {}
+        link_tmp['id'] = id_tmp
+        link_tmp['source'] = hash_dict[item['prev_hash']]
+        link_tmp['target'] = hash_dict[item['merkle_root']]
+        id_tmp += 1
+        nodes.append(item_tmp)
+        links.append(link_tmp)
+    return nodes, links
+
 @active
 def show(request):
     # return all of the current block info
     port = 9999 # to do
-    global last_index
-
     bc_ins = chain.Chain(port)
     bc_ins.read_chain()
     last_index = bc_ins.last_index(0)
 
-    return JsonResponse(bc_ins.blockchain)
+    # bytes cannot be json serialize
+    hash_dict = {}
+    id_tmp = 0
+    for i in range(len(bc_ins.blockchain)):
+        bc_ins.blockchain[i].merkle_root = bc_ins.blockchain[i].merkle_root.decode()
+        bc_ins.blockchain[i].prev_hash = bc_ins.blockchain[i].prev_hash.decode()
+        hash_dict[bc_ins.blockchain[i].merkle_root] = id_tmp
+        id_tmp += 1
+    blockchain_tmp = class_to_dict(bc_ins.blockchain)
+
+    nodes, links = format_blockchain(blockchain_tmp, hash_dict)
+    data = {
+        'nodes'       : nodes,
+        'links'       : links,
+        'last_id'     : last_index[0],
+        'offset'      : last_index[1]
+    }
+    return JsonResponse(data)
       
 @active
 def new_block(request):
     # accept new block
     # return new block to front-end
-    global last_index
+    last_id = request.GET['last_id']
+    offset = request.GET['offset']
+    last_index = [int(last_id), int(offset)]
+    
     port = 9999 # to do
     ret_list = []
+    index = []
     tmp_chain = chain.Chain(port)
-    last_index_cur = chain.Chain(port).last_block(0)
-    index = [last_index_cur]
+    last_index_cur = tmp_chain.last_index(0)
+    index.append(last_index_cur)
+    
     id = 1
-    while last_index_cur != last_index:
+    while last_index_cur[0] != last_index[0]:
         last_index_cur = tmp_chain.last_index(id)
         index.append(last_index_cur)
         id += 1
-    index.append(last_index)
-    last_index = index[0]
+    last_index_cur = tmp_chain.last_index(id)
+    index.append(last_index_cur)
     
+    print(index)
+    hash_dict = {}
     for item in index[1:]:
-        ret_list.append(tmp_chain.read_chain_index(item))
+        block = tmp_chain.read_chain_index(item)
+        block.merkle_root = block.merkle_root.decode()
+        block.prev_hash = block.prev_hash.decode()
+        ret_list.append(block)
+        hash_dict[block.merkle_root] = item[0]
     
-    return JsonResponse(ret_list)  
+    if len(ret_list) >= 1:
+        blockchain_tmp = class_to_dict(ret_list[:-1])
+        nodes, links = format_blockchain(blockchain_tmp, hash_dict, int(last_id))
+        print(nodes)
+        data = {
+            'nodes'    : nodes, 
+            'links'    : links,
+            'last_id'  : index[0][0],
+            'offset'  : index[0][1],
+        }
+    else:
+        data = {
+            'nodes'    : [], 
+            'links'    : [],
+        }
+    return JsonResponse(data)  
 
 #debug
 @active
 def visual(request):
     return render(request, 'blockchain/visual.html')
 
+#debug
+def add_new_block(request):
+    bc = chain.Chain(9999)
+    import random
+    rand_num = random.randint(0, 65535);
+    bc.add_block('hello this is a new transaction ' + str(rand_num))
 
-
+    return JsonResponse({})
