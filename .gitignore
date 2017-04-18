@@ -3,6 +3,7 @@ venv/blockchain/blockchain/settings.py
 
 # tmp file
 blockchain/bcinfo/
+venv/blockchain/blockchain/bcinfo/
 
 # python cache
 blockchain/module/__pycache__/

@@ -5,7 +5,7 @@ import socket
 import struct
 import sys
 import time
-from threading import Thread
+from threading import Thread, Lock
 
 import chain
 import mining
@@ -46,6 +46,7 @@ class BCNode:
 
         self.blockchain = chain.Chain(self.PORT_SERVER)
         self.blockchain.create_first_block('first transaction.')
+        self.lock = Lock()
 
     def set_file(self):
         with open(self.BC_FILE, 'w') as tmp: pass
@@ -81,41 +82,45 @@ class BCNode:
         : start socket client
         : param: except_addr(string: ip+' '+port)
         """
-        for host in self.HOST_LIST:   
-            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.client_socket.settimeout(15)
-            print('built client socket')
-            while True:    
-                # print('except_addr ' + str(except_addr))
-                # print('host ' + str(host))
-                # time.sleep(5)
-                if len(except_addr) == 0 or host == except_addr:
-                    continue # except source_host
-                
-                host = host.split(' ') # host: [ip(string), port(string)]
-                host[1] = int(host[1]) 
-           
-                print("> [2 send to %s]" % host, self.DATA)
-                try:
-                    print('connect remote socket')
-                    self.client_socket.connect(tuple(host))
-                    self.client_socket.send(self.DATA.encode())
+        for host in self.HOST_LIST:
+            self.lock.acquire()
+            try:
+                self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.client_socket.settimeout(15)
+                print('built client socket')
+                while True:    
+                    # print('except_addr ' + str(except_addr))
+                    # print('host ' + str(host))
+                    # time.sleep(5)
+                    if len(except_addr) == 0 or host == except_addr:
+                        continue # except source_host
+                    
+                    host = host.split(' ') # host: [ip(string), port(string)]
+                    host[1] = int(host[1]) 
+            
+                    print("> [2 send to %s]" % host, self.DATA)
                     try:
-                        check_code = self.client_socket.recv(self.RECV_BUFFER)
-                        if self.check(check_code, self.client_socket):
-                            print('> [3 recv] right info: %s.' % host)
-                            self.client_socket.send(b'success')
-                        else:
-                            print('> [3 recv] wrong info: %s.' % host)
-                            print('> [4 resend] to %s.' % host)
-                            continue # resend self.DATA
+                        print('connect remote socket')
+                        self.client_socket.connect(tuple(host))
+                        self.client_socket.send(self.DATA.encode())
+                        try:
+                            check_code = self.client_socket.recv(self.RECV_BUFFER)
+                            if self.check(check_code, self.client_socket):
+                                print('> [3 recv] right info: %s.' % host)
+                                self.client_socket.send(b'success')
+                            else:
+                                print('> [3 recv] wrong info: %s.' % host)
+                                print('> [4 resend] to %s.' % host)
+                                continue # resend self.DATA
+                        except Exception as e:
+                            print('! %s %s' % (e, host))
                     except Exception as e:
                         print('! %s %s' % (e, host))
-                except Exception as e:
-                    print('! %s %s' % (e, host))
-                finally:
-                    self.client_socket.close()
-                    break
+                    finally:
+                        self.client_socket.close()
+                        break
+            finally:
+                self.lock.release()
 
     def check(self, check_code, sock):
         """
