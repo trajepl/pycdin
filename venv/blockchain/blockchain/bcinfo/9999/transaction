@@ -1,1 +1,6 @@
-127.0.0.1 9000 trasfer 16 bitcoins to 127.0.0.1 9001.
+127.0.0.1 9001 trasfer 42 bitcoins to 127.0.0.1 9000.
+127.0.0.1 9000 trasfer 24 bitcoins to 127.0.0.1 9001.
+127.0.0.1 9000 trasfer 13 bitcoins to 127.0.0.1 9001.
+127.0.0.1 9001 trasfer 30 bitcoins to 127.0.0.1 9000.
+127.0.0.1 9001 trasfer 26 bitcoins to 127.0.0.1 9000.
+127.0.0.1 9001 trasfer 64 bitcoins to 127.0.0.1 9000.

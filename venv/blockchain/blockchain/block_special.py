@@ -1,7 +1,6 @@
 import time
 import struct
 import random
-import hashlib
 from merkle import Merkle
 
 LEN_PRE_DATA = 152
@@ -12,9 +11,9 @@ MERKLE_ROOT = 3
 RAND_NUM = 4
 LENGTH = 5
 DATA = 6
-PACK_FORMAT = 'LL64s64siI' # I: [0, pow(2,32)] i: [-pow(2,32), pow(2,32)]
-SPLIT_NOTE = '$'
-RAND_RANGE = 65535*99
+PACK_FORMAT = 'LL64s64siI'  # I: [0, pow(2,32)] i: [-pow(2,32), pow(2,32)]
+SPLIT_NOTE = '|'
+RAND_RANGE = 65535*9999
 
 class Block:
     def __init__(self, data, prev_hash, *argv):
@@ -35,7 +34,7 @@ class Block:
         self.set_length()
         
         self.merkle_root = None
-        if len(argv) == 2:
+        if len(argv) >= 2:
             self.merkle_root = argv[1].encode()
         else:
             self.set_merkle_root()

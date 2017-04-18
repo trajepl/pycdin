@@ -1,5 +1,5 @@
 import struct
-from block import Block, LEN_PRE_DATA, SPLIT_NOTE, DATA, \
+from block_special import Block, LEN_PRE_DATA, SPLIT_NOTE, DATA, \
     PREV_HASH, MERKLE_ROOT, LENGTH, PACK_FORMAT, TIMESTAMP, RAND_NUM
 
 ITEM_LEN = 16  # index file length
@@ -42,6 +42,8 @@ class Chain:
     def create_first_block(self, data):
         null_merkle_root = '0000000000000000000000000000000000000000000000000000000000000000'
         block = Block(data, null_merkle_root)
+        self.blockchain = []
+        self.blockchain.append(block)
         self.write_block(block, 'wb')
 
         # update index file
@@ -97,11 +99,13 @@ class Chain:
     def last_block_prefix(self):
         index_item = []
         with open(self.index_file, 'rb') as index:
-            index.seek(-32, 2)
+            index.seek(-16 * 2, 2)
             index_item_bytes1 = index.read(ITEM_LEN)
             index_item.append(list(struct.unpack('QQ', index_item_bytes1)))
             index_item_bytes2 = index.read(ITEM_LEN)
             index_item.append(list(struct.unpack('QQ', index_item_bytes2)))
+            # index_item_bytes3 = index.read(ITEM_LEN)
+            # index_item.append(list(struct.unpack('QQ', index_item_bytes3)))
 
         with open(self.bc_file, 'rb') as chain:
             chain.seek(index_item[0][1], 0)
@@ -114,7 +118,7 @@ class Chain:
     def last_block(self):
         index_item = []
         with open(self.index_file, 'rb') as index:
-            index.seek(-32, 2)
+            index.seek(-16 * 2, 2)
             index_item_bytes1 = index.read(ITEM_LEN)
             index_item.append(list(struct.unpack('QQ', index_item_bytes1)))
             index_item_bytes2 = index.read(ITEM_LEN)
@@ -157,6 +161,7 @@ class Chain:
         block_prefix, index_item = self.last_block_prefix()
         prev_hash = block_prefix[MERKLE_ROOT]
         block = Block(data, prev_hash)
+        self.blockchain.append(block)
         self.write_block(block, 'ab')
 
         # update index file 
@@ -164,8 +169,29 @@ class Chain:
         index_item[0] += 1
         index_item[1] += len_block
         self.update_index(index_item, 'ab')
+    
+    def last_index(self, plus):
+        index_item = []
+        with open(self.index_file, 'rb') as index:
+            offset = -ITEM_LEN * (1 + plus)
+            index.seek(offset, 2)
+            index_item_bytes = index.read(ITEM_LEN)
+            index_item = struct.unpack('QQ', index_item_bytes)
+        return index_item
 
-        return block
+    def read_chain_index(self, index):
+        with open(self.bc_file, 'rb') as bc_in:
+            bc_in.seek(index[1], 0)
+            block_bytes = bc_in.read(LEN_PRE_DATA)
+            block = list(struct.unpack(PACK_FORMAT, block_bytes))
+            block[PREV_HASH] = block[PREV_HASH].decode()
+            block[MERKLE_ROOT] = block[MERKLE_ROOT].decode()
+
+            data_len = block[LENGTH]
+            data_bytes = bc_in.read(data_len)
+            data = struct.unpack(str(data_len) + 's', data_bytes)[0].decode()
+            data = data.split(SPLIT_NOTE)
+        return Block(data, block[PREV_HASH], block[TIMESTAMP], block[MERKLE_ROOT], block[RAND_NUM])
 
     def print_index(self):
         index_list = []

@@ -86,7 +86,6 @@ class Block:
         self.length = len(str_data)
 
         pack_format = PACK_FORMAT + str(self.length) + 's'
-        print(pack_format)
         return struct.pack(pack_format, self.magic_id, self.timestamp, 
             self.prev_hash, self.merkle_root, self.randnum, self.length, str_data.encode())
                     

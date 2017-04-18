@@ -19,12 +19,13 @@ HOST_LIST_SPLIT = '#'
 HOST_SPLIT = '-'
 
 class BCNode:
-    def __init__(self, host, port_server):
+    def __init__(self, host, port_server, node_addr):
         """
         : init socket host(string) | port_server(int)
         """
         self.HOST = host
         self.PORT_SERVER = port_server
+        self.SHOW_NODE_ADDR = node_addr
 
         self.RECV_BUFFER = 4096
         self.MAX_LEN_CONN = 10
@@ -39,6 +40,7 @@ class BCNode:
         self.SOCKET_LIST = []  # connection client socket_list
         self.HOST_LIST = [] # one-step node
         self.get_socket_list(self.HOST_FILE) # get the one-step node
+        self.HOST_LIST.append(self.SHOW_NODE_ADDR)
 
         self.DATA = ''
 
@@ -79,38 +81,38 @@ class BCNode:
         : start socket client
         : param: except_addr(string: ip+' '+port)
         """
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.settimeout(2)
-
-        for host in self.HOST_LIST:
-            if len(except_addr) == 0 or host == except_addr:
-                continue # except source_host
+        for host in self.HOST_LIST:   
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.client_socket.settimeout(15)
+            print('built client socket')
+            while True:    
+                # print('except_addr ' + str(except_addr))
+                # print('host ' + str(host))
+                # time.sleep(5)
+                if len(except_addr) == 0 or host == except_addr:
+                    continue # except source_host
                 
-            host = host.split(' ') # host: [ip(string), port(string)]
-            host[1] = int(host[1]) 
-
-            # if host[1] == self.PORT_SERVER and host[0] == self.HOST: 
-            #     continue # except itself
-            
-            while True:
-                print("> [2 send to %s]" % host)
+                host = host.split(' ') # host: [ip(string), port(string)]
+                host[1] = int(host[1]) 
+           
+                print("> [2 send to %s]" % host, self.DATA)
                 try:
+                    print('connect remote socket')
                     self.client_socket.connect(tuple(host))
                     self.client_socket.send(self.DATA.encode())
+                    try:
+                        check_code = self.client_socket.recv(self.RECV_BUFFER)
+                        if self.check(check_code, self.client_socket):
+                            print('> [3 recv] right info: %s.' % host)
+                            self.client_socket.send(b'success')
+                        else:
+                            print('> [3 recv] wrong info: %s.' % host)
+                            print('> [4 resend] to %s.' % host)
+                            continue # resend self.DATA
+                    except Exception as e:
+                        print('! %s %s' % (e, host))
                 except Exception as e:
-                    print('! 59: %s %s' % (e, host))
-
-                try:
-                    check_code = self.client_socket.recv(self.RECV_BUFFER)
-                    if self.check(check_code, self.client_socket):
-                        print('> [3 recv] right info: %s.' % host)
-                        self.client_socket.send(b'success')
-                    else:
-                        print('> [3 recv] wrong info: %s.' % host)
-                        print('> [4 resend] to %s.' % host)
-                        continue # resend self.DATA
-                except Exception as e:
-                    print('! 67: %s %s' % (e, host))
+                    print('! %s %s' % (e, host))
                 finally:
                     self.client_socket.close()
                     break
@@ -119,9 +121,7 @@ class BCNode:
         """
         : check information which server receives
         """
-        origin_data = ''
-        for item in self.DATA:
-            origin_data += item
+        origin_data = self.DATA
         hash_code = hashlib.sha256(origin_data.encode()).hexdigest().encode()
     
         return True if hash_code == check_code else False
@@ -161,10 +161,13 @@ class BCNode:
         """
         : valid block merkle_root
         """
-        block_prefix = struct.unpack(chain.PACK_FORMAT, block[:chain.LEN_PRE_DATA].encode())
-        len_data = block_prefix[chain.LENGTH]
-        b_data = struct.unpack(str(len_data)+'s', block[chain.LEN_PRE_DATA:].encode())
-        b_data_list = b_data.split('|')
+
+        # end the mining 
+        # to do
+        block = block.split('|')
+        block = block[2:]
+        len_data = block[chain.LENGTH]
+        b_data_list = block[chain.DATA].split('$')
         len_transaction = len(b_data_list)
 
         if len(self.TRANSACTION) != len_transaction:
@@ -178,22 +181,17 @@ class BCNode:
             for item in self.TRANSACTION:
                 if item not in data:
                     return
-            # tmp_merkle = merkle.Merkle()
-            # tmp_merkle.add_leaf(self.TRANSACTION, True)
-            # tmp_merkle.make_tree()
-            # tmp_merkle_root = tmp_merkle.get_merkle_root()
-            #
-            # check_merkle_root = block_prefix[chain.MERKLE_ROOT]
-            #
-            # if check_merkle_root == tmp_merkle_root:
-            self.blockchain.write_exist_block(block.encode(), 'ab', len_data)
-
+            
+            self.blockchain.add_block(b_data_list)
             self.TRANSACTION = set(list(self.TRANSACTION)[len_transaction:])
             with open(self.UNMARK_FILE, 'w') as tmp:
                 for item in self.TRANSACTION:
                     tmp.write(item+'\n')
             
-            self.send(PRE_FIX_BLOCK, block.decode())
+            self.send(PRE_FIX_BLOCK, block)
+
+            # start the mining 
+            # to do
 
     def receive(self):
         """
@@ -241,17 +239,18 @@ def argv_format(hosts_str):
 
 def run():
     if len(sys.argv) >= 2:
-        print("186: start_server sys.argv: %s" % str(sys.argv))
+        print("node.py: start_server sys.argv: %s" % str(sys.argv))
         host = sys.argv[1]
+        show_node_addr = sys.argv[4] + ' '+ '9999'
         port = int(sys.argv[2])
         hosts_list = argv_format(sys.argv[3])
         print(hosts_list)
-        bcnode = BCNode(host, port)
+        bcnode = BCNode(host, port, show_node_addr)
         bcnode.start_server()
         Thread(target=bcnode.receive).start()
-        time.sleep(10)
+        time.sleep(5)
         Thread(target=transaction.send, args=(bcnode, hosts_list)).start()
-        time.sleep(10)
+        time.sleep(5)
         Thread(target=mining.run, args=(bcnode,)).start()  # note that: (,)
     else:
         print('wrong parm.')

@@ -21,7 +21,7 @@ def random_send(bcnode, hosts_list):
         src_host = src_hosts[0]
         src_port = src_hosts[1]
         except_addr = src_host + ' ' + str(src_port)
-        print('TRANSACTION 17 src_hosts: ' + str(src_hosts))
+        print('TRANSACTION src_hosts: ' + str(src_hosts))
         bcnode.send(node.PRE_FIX_TRANSACTION, data, except_addr)
     else:
         pass

@@ -45,8 +45,8 @@ class RouteControl:
         len_route = len(PRE_FIX_ROUTE)
         len_process = len(PRE_FIX_PROCESS)
         while True:
-            client_sock, add = self.SERVER_SOCKET.accept()
-            
+            client_sock, addr = self.SERVER_SOCKET.accept()
+
             while True:
                 data = client_sock.recv(self.RECV_BUFFER)
                 data = data.decode()
@@ -72,8 +72,8 @@ class RouteControl:
                     addr_host = data[0]
                     host_list_str = data[2]
                     addr_port = data[1]
-                    print('python node.py %s %s %s &' %(addr_host, addr_port, host_list_str))
-                    os.system('python node.py %s %s %s &' %(addr_host, addr_port, host_list_str))
+                    print('python node.py %s %s %s %s &' %(addr_host, addr_port, host_list_str, addr[0]))
+                    os.system('python node.py %s %s %s %s &' %(addr_host, addr_port, host_list_str, addr[0]))
 
                     client_sock.send(b'success')
                     client_sock.close()

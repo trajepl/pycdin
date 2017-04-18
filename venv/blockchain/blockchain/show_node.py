@@ -1,18 +1,27 @@
 # trade simulation
+import os
 import hashlib
 import select
 import socket
 import struct
-import sys
-import time
-import chain
+import chain_special
 
 PRE_FIX_TRANSACTION = '[TRANSACTION]'
 PRE_FIX_BLOCK = '[BLOCK]'
 HOST_LIST_SPLIT = '#'
 HOST_SPLIT = '-'
 
-class BCNode:
+
+def mkdir(path):
+    is_exists=os.path.exists(path)
+    if not is_exists:
+        os.makedirs(path)
+        return True
+    else:
+        return False
+
+
+class ShowNode:
     def __init__(self, host, port_server):
         """
         : init socket host(string) | port_server(int)
@@ -32,11 +41,9 @@ class BCNode:
         self.TRANSACTION = set() # transaction information
         self.SOCKET_LIST = []  # connection client socket_list
 
-        self.get_socket_list(self.HOST_FILE) # get the one-step node
-
         self.DATA = ''
 
-        self.blockchain = chain.Chain(self.PORT_SERVER)
+        self.blockchain = chain_special.Chain(self.PORT_SERVER)
         self.blockchain.create_first_block('first transaction.')
 
     def set_file(self):
@@ -66,7 +73,6 @@ class BCNode:
 
     def relay_data(self, data):
         """
-        : relay_data
         : param: data(string:pre_fix|source_addr|transaction)
         """
         data_list = data.split('|')
@@ -76,29 +82,29 @@ class BCNode:
             with open(self.UNMARK_FILE, 'a') as transfer_io:
                 transfer_io.write(data_list[2] + '\n') # store data in disk(unmark)
 
-    def recv_block(self, block):
+    def valid_block(self, block):
         """
         : valid block merkle_root
         """
-        block_prefix = struct.unpack(chain.PACK_FORMAT, block[:chain.LEN_PRE_DATA].encode())
-        len_data = block_prefix[chain.LENGTH]
-        b_data = struct.unpack(str(len_data)+'s', block[chain.LEN_PRE_DATA:].encode())
-        b_data_list = b_data.split('|')
+
+        # end the mining 
+        # to do
+        block = block.split('|')
+        block = block[2:]
+        len_data = block[chain_special.LENGTH]
+        b_data_list = block[chain_special.DATA].split('$')
         len_transaction = len(b_data_list)
 
         if len(self.TRANSACTION) != len_transaction:
             pass
         else:
-            '''
-            : when the merkle_root same pass.(order same)
-            '''
             last_block = self.blockchain.last_block()
             data = last_block[-1]
             for item in self.TRANSACTION:
                 if item not in data:
                     return
-            self.blockchain.write_exist_block(block.encode(), 'ab', len_data)
-
+            
+            self.blockchain.add_block(b_data_list)
             self.TRANSACTION = set(list(self.TRANSACTION)[len_transaction:])
             with open(self.UNMARK_FILE, 'w') as tmp:
                 for item in self.TRANSACTION:
@@ -119,16 +125,17 @@ class BCNode:
                         data_bytes = sock.recv(self.RECV_BUFFER) # receive data
                         data = data_bytes.decode()
                         check_code = hashlib.sha256(data_bytes).hexdigest().encode()
-
+                        
                         if len(data) != 0:
                             sock.send(check_code)
-                            print('> [recv](%s@%s) receives info.' % addr)
                             check_data = sock.recv(self.RECV_BUFFER).decode() # check status
                             if check_data == 'success':
                                 if data.startswith(PRE_FIX_TRANSACTION):
+                                    print('Receive transaction.')
                                     self.relay_data(data)
                                 elif data.startswith(PRE_FIX_BLOCK):
-                                    self.recv_block(data)
+                                    print('Receive block.')
+                                    self.valid_block(data)
                         else:
                             print('> [recv](%s@ %s) is offline.' % addr)
                         self.SOCKET_LIST.remove(sock)
@@ -138,12 +145,7 @@ class BCNode:
         self.server_socket.close()
 
 
-def run():
-    show_node = ShowNode('', 9999)
-    show_node.start_server()
-    show_node.receive()
-
-
 if __name__ == '__main__':
-    run()
-    
+    show_node = ShowNode('127.0.0.1', 9999)
+    show_node.start_server()
+    show_node.receive()    
