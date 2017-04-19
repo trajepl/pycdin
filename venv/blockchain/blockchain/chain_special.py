@@ -1,6 +1,10 @@
 import struct
-from block_special import Block, LEN_PRE_DATA, SPLIT_NOTE, DATA, \
-    PREV_HASH, MERKLE_ROOT, LENGTH, PACK_FORMAT, TIMESTAMP, RAND_NUM
+try:
+    from .block import Block, LEN_PRE_DATA, SPLIT_NOTE, DATA, \
+        PREV_HASH, MERKLE_ROOT, LENGTH, PACK_FORMAT, TIMESTAMP, RAND_NUM
+except:
+    from block import Block, LEN_PRE_DATA, SPLIT_NOTE, DATA, \
+        PREV_HASH, MERKLE_ROOT, LENGTH, PACK_FORMAT, TIMESTAMP, RAND_NUM
 
 ITEM_LEN = 16  # index file length
 MAX_BRANCHING_LEN = 6  # max branching len
