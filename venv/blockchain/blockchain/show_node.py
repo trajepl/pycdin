@@ -86,13 +86,17 @@ class ShowNode:
         """
         : valid block merkle_root
         """
-
         # end the mining 
         # to do
-        block = block.split('|')
-        block = block[2:]
-        len_data = block[chain_special.LENGTH]
-        b_data_list = block[chain_special.DATA].split('$')
+        DATA_SPLIT = '|'
+        BLOCK_ITEM_SPLIT = '#'
+        TRANSACTION_SPLIT = '$'
+
+        info_list = block.split(DATA_SPLIT)
+        block_str = info_list[2]
+        block_list = block_str.split(BLOCK_ITEM_SPLIT)
+        # len_data = block_list[chain_special.LENGTH]
+        b_data_list = block_list[chain_special.DATA].split(TRANSACTION_SPLIT)
         len_transaction = len(b_data_list)
 
         if len(self.TRANSACTION) != len_transaction:
@@ -100,12 +104,18 @@ class ShowNode:
         else:
             last_block = self.blockchain.last_block()
             data = last_block[-1]
-            for item in self.TRANSACTION:
-                if item not in data:
+
+            if block_list[chain_special.PREV_HASH] != last_block[chain_special.MERKLE_ROOT]:
+                print('different hash')
+                return
+            for item in b_data_list:
+                if item not in self.TRANSACTION:
+                    print('different transaction')
                     return
+                else:
+                    self.TRANSACTION.remove(item)
             
             self.blockchain.add_block(b_data_list)
-            self.TRANSACTION = set(list(self.TRANSACTION)[len_transaction:])
             with open(self.UNMARK_FILE, 'w') as tmp:
                 for item in self.TRANSACTION:
                     tmp.write(item+'\n')
@@ -140,7 +150,7 @@ class ShowNode:
                             print('> [recv](%s@ %s) is offline.' % addr)
                         self.SOCKET_LIST.remove(sock)
                     except Exception as e:
-                        print('! 132: %s.' % e)
+                        print('! show_node receive: %s.' % e)
                         self.SOCKET_LIST.remove(sock)
         self.server_socket.close()
 

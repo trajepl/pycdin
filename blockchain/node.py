@@ -16,6 +16,7 @@ PRE_FIX_TRANSACTION = '[TRANSACTION]'
 PRE_FIX_REQUEST = '[REQUEST_INFO]'
 PRE_FIX_BLOCK = '[BLOCK]'
 HOST_LIST_SPLIT = '#'
+BLOCK_ITEM_SPLIT = '#'
 HOST_SPLIT = '-'
 
 class BCNode:
@@ -46,7 +47,8 @@ class BCNode:
 
         self.blockchain = chain.Chain(self.PORT_SERVER)
         self.blockchain.create_first_block('first transaction.')
-        self.lock = Lock()
+        
+        self.lock = Lock()  # init threading.Lock
 
     def set_file(self):
         with open(self.BC_FILE, 'w') as tmp: pass
@@ -63,6 +65,8 @@ class BCNode:
     def get_socket_list(self, fn):
         with open(fn, 'r') as socket_list:
             for line in socket_list.readlines():
+                if line[-1] == '\n':
+                    line = line[:-1]
                 self.HOST_LIST.append(line)
 
     def start_server(self):
@@ -83,50 +87,35 @@ class BCNode:
         : param: except_addr(string: ip+' '+port)
         """
         for host in self.HOST_LIST:
-            self.lock.acquire()
-            try:
-                self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.client_socket.settimeout(15)
-                print('built client socket')
-                while True:    
-                    # print('except_addr ' + str(except_addr))
-                    # print('host ' + str(host))
-                    # time.sleep(5)
-                    if len(except_addr) == 0 or host == except_addr:
-                        continue # except source_host
-                    
-                    host = host.split(' ') # host: [ip(string), port(string)]
-                    host[1] = int(host[1]) 
-            
-                    print("> [2 send to %s]" % host, self.DATA)
-                    try:
-                        print('connect remote socket')
-                        self.client_socket.connect(tuple(host))
-                        self.client_socket.send(self.DATA.encode())
-                        try:
-                            check_code = self.client_socket.recv(self.RECV_BUFFER)
-                            if self.check(check_code, self.client_socket):
-                                print('> [3 recv] right info: %s.' % host)
-                                self.client_socket.send(b'success')
-                            else:
-                                print('> [3 recv] wrong info: %s.' % host)
-                                print('> [4 resend] to %s.' % host)
-                                continue # resend self.DATA
-                        except Exception as e:
-                            print('! %s %s' % (e, host))
-                    except Exception as e:
-                        print('! %s %s' % (e, host))
-                    finally:
-                        self.client_socket.close()
+            if host == except_addr: continue
+            host = host.split(' ') # host: [ip(string), port(string)]
+            host[1] = int(host[1]) 
+            while True:
+                try:
+                    self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    self.client_socket.settimeout(15) 
+                    self.client_socket.connect(tuple(host))
+                    self.client_socket.send(self.DATA.encode())
+                    print("> [1 send to %s]" % host, self.DATA)
+                    check_code = self.client_socket.recv(self.RECV_BUFFER)
+                    if self.check(check_code, self.DATA, self.client_socket):
+                        print('> [2 recv] right info: %s.' % host)
+                        self.client_socket.send(b'success')
                         break
-            finally:
-                self.lock.release()
+                    else:
+                        print('> [2 recv] wrong info: %s.' % host)
+                        print('> [3 resend] to %s.' % host)
+                        continue # resend self.DATA
+                except Exception as e:
+                    print('! node %s' %e)
+                finally:
+                    self.client_socket.close()
 
-    def check(self, check_code, sock):
+    def check(self, check_code, data, sock):
         """
         : check information which server receives
         """
-        origin_data = self.DATA
+        origin_data = data
         hash_code = hashlib.sha256(origin_data.encode()).hexdigest().encode()
     
         return True if hash_code == check_code else False
@@ -136,7 +125,7 @@ class BCNode:
         : set data information then call self.start_send to send data
         """
         self.set_data(pre_fix, data)
-        print('> [1 sending] %s' % self.DATA)
+        print('> [0 relay data] %s' % self.DATA)
         self.start_send(except_addr)
 
     def relay_data(self, data):
@@ -166,34 +155,43 @@ class BCNode:
         """
         : valid block merkle_root
         """
-
         # end the mining 
         # to do
-        block = block.split('|')
-        block = block[2:]
-        len_data = block[chain.LENGTH]
-        b_data_list = block[chain.DATA].split('$')
-        len_transaction = len(b_data_list)
+        DATA_SPLIT = '|'
+        BLOCK_ITEM_SPLIT = '#'
+        TRANSACTION_SPLIT = '$'
 
+        info_list = block.split(DATA_SPLIT)
+        block_str = info_list[2]
+        block_list = block_str.split(BLOCK_ITEM_SPLIT)
+        # len_data = block_list[chain.LENGTH]
+        b_data_list = block_list[chain.DATA].split(TRANSACTION_SPLIT)
+        len_transaction = len(b_data_list)
+        
         if len(self.TRANSACTION) != len_transaction:
             pass
         else:
-            '''
-            : when the merkle_root same pass.(order same)
-            '''
             last_block = self.blockchain.last_block()
             data = last_block[-1]
-            for item in self.TRANSACTION:
-                if item not in data:
+
+            if block_list[chain.PREV_HASH] != last_block[chain.MERKLE_ROOT]:
+                print('different hash')
+                return
+            for item in b_data_list:
+                if item not in self.TRANSACTION:
+                    print('different transaction')
                     return
-            
+                else:
+                    self.TRANSACTION.remove(item)
+
             self.blockchain.add_block(b_data_list)
-            self.TRANSACTION = set(list(self.TRANSACTION)[len_transaction:])
             with open(self.UNMARK_FILE, 'w') as tmp:
                 for item in self.TRANSACTION:
                     tmp.write(item+'\n')
             
-            self.send(PRE_FIX_BLOCK, block)
+            self.send(PRE_FIX_BLOCK, block_str)
+
+        
 
             # start the mining 
             # to do
@@ -216,7 +214,7 @@ class BCNode:
 
                         if len(data) != 0:
                             sock.send(check_code)
-                            print('> [recv](%s@%s) receives info.' % addr)
+                            # print('> [recv](%s@%s) receives info.' % addr)
                             check_data = sock.recv(self.RECV_BUFFER).decode() # check status
                             if check_data == 'success':
                                 if data.startswith(PRE_FIX_TRANSACTION):
@@ -229,7 +227,7 @@ class BCNode:
                             print('> [recv](%s@ %s) is offline.' % addr)
                         self.SOCKET_LIST.remove(sock)
                     except Exception as e:
-                        print('! 132: %s.' % e)
+                        print('! node receive: %s.' % e)
                         self.SOCKET_LIST.remove(sock)
         self.server_socket.close()
 
@@ -253,9 +251,9 @@ def run():
         bcnode = BCNode(host, port, show_node_addr)
         bcnode.start_server()
         Thread(target=bcnode.receive).start()
-        time.sleep(5)
+        # time.sleep(5)
         Thread(target=transaction.send, args=(bcnode, hosts_list)).start()
-        time.sleep(5)
+        time.sleep(2)
         Thread(target=mining.run, args=(bcnode,)).start()  # note that: (,)
     else:
         print('wrong parm.')

@@ -133,8 +133,9 @@ class Chain:
             block_bytes = chain.read(LEN_PRE_DATA)
             block = list(struct.unpack(PACK_FORMAT, block_bytes))
             len_data = block[LENGTH]
-            data = chain.read(len_data)
+            data = chain.read(len_data).decode()
             block[MERKLE_ROOT] = block[MERKLE_ROOT].decode()
+            block[PREV_HASH] = block[PREV_HASH].decode()
             block.append(data)
 
         return block
