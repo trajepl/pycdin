@@ -10,6 +10,7 @@ blockchain/module/__pycache__/
 blockchain/__pycache__/
 module-inject/module/__pycache__
 venv/blockchain/blockchain/__pycache__/
+venv/lib/python3.6/__pycache__/
 
 
 # idea config file
