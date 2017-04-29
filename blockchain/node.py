@@ -90,6 +90,7 @@ class BCNode:
             if host == except_addr: continue
             host = host.split(' ') # host: [ip(string), port(string)]
             host[1] = int(host[1]) 
+            count_flag = 0
             while True:
                 try:
                     self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -105,7 +106,10 @@ class BCNode:
                     else:
                         print('> [2 recv] wrong info: %s.' % host)
                         print('> [3 resend] to %s.' % host)
-                        continue # resend self.DATA
+                        count_flag += 1
+                        if count_flag <= 3:
+                            continue # resend self.DATA
+                        else: break
                 except Exception as e:
                     print('! node %s' %e)
                 finally:
