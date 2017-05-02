@@ -1,0 +1,12 @@
+div {
+	float:left;
+	width:48%;
+	height:950px;
+}
+div#split-line{
+	border:2px, dashed;
+	border-radius:50%;
+	width:0.5%;
+	height:1000px;
+	background-color:#aaa;
+}

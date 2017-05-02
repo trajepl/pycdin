@@ -1,7 +1,7 @@
 $(document).ready(function() {
-    var myChart = echarts.init(document.getElementById('blockchain'));
+    var myChart = echarts.init(document.getElementById('node'));
     myChart.showLoading();
-    $.get("/show", function(data) {
+    $.get("/node", function(data) {
         var last_id = data.last_id;
         var nodes = data.nodes;
         var links = data.links;
@@ -12,30 +12,14 @@ $(document).ready(function() {
             'links' : links,
         };
 
-        var categories = [{'name' : 'block'}, {'name' : 'island'}];
+        var categories = [{'name' : 'transfer'}, {'name' : 'mining'}];
         option = {
             title: {
-                text: 'blockchain',
+                text: 'network of simulation',
                 top: 'bottom',
                 left: 'center'
             },
-            tooltip: { 
-                formatter: function(param){
-                    param = param.data.value;
-                    length_data = param.data.length;
-                    data = '';
-                    for(var i = 0; i < length_data; i++) {
-                        data += param.data[i] + '<br/>'
-                    }
-                    return [
-                        data,
-                        'time        : ' + param.timestamp + '<br/>',
-                        'prev_hash   : ' + param.prev_hash + '<br/>',
-                        'merkle_root : ' + param.merkle_root + '<br/>',
-                        
-                    ].join('');
-                },
-            },
+            tooltip: { },
             legend: [{
                 // selectedMode: 'single',
                 data: categories.map(function (a) {
@@ -45,7 +29,7 @@ $(document).ready(function() {
             animation: false,
             series : [
                 {
-                    name: 'blockchain',
+                    name: 'network',
                     type: 'graph',
                     layout: 'force',
                     data: graph.nodes,
