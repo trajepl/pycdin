@@ -36,6 +36,8 @@ class ShowNode:
         self.BC_FILE = 'bcinfo/' + str(port_server) + '/blockchain'
         self.BC_INDEX_FILE = 'bcinfo/' + str(port_server) + '/index.id'     
         self.HOST_FILE = 'bcinfo/' + str(port_server) + '/host'
+        self.ROUTE_Y_FILE = 'bcinfo/' + str(port_server) + '/y' # mining node
+        self.ROUTE_X_FILE = 'bcinfo/' + str(port_server) + '/x' # transfer node
         self.set_file() # create blockchain and index.id file and transaction
 
         self.TRANSACTION = set() # transaction information
@@ -51,6 +53,8 @@ class ShowNode:
         with open(self.BC_FILE, 'w') as tmp: pass
         with open(self.BC_INDEX_FILE, 'w') as tmp: pass
         with open(self.UNMARK_FILE, 'w') as tmp: pass
+        with open(self.ROUTE_X_FILE, 'w') as tmp: pass
+        with open(self.ROUTE_Y_FILE, 'w') as tmp: pass
 
     def set_data(self, pre_fix, data):
         """
@@ -81,6 +85,8 @@ class ShowNode:
             print('write %s into transaction' % data_list[2])
             with open(self.UNMARK_FILE, 'a') as transfer_io:
                 transfer_io.write(data_list[2] + '\n') # store data in disk(unmark)
+            with open(self.ROUTE_X_FILE, 'a') as transfer_io:
+                transfer_io.write(data_list[1] + '\n') # store data in disk(unmark) (not safe PV)
 
     def valid_block(self, block):
         """
@@ -93,6 +99,7 @@ class ShowNode:
         TRANSACTION_SPLIT = '$'
 
         info_list = block.split(DATA_SPLIT)
+        source_addr = info_list[1]
         block_str = info_list[2]
         block_list = block_str.split(BLOCK_ITEM_SPLIT)
         # len_data = block_list[chain_special.LENGTH]
@@ -119,6 +126,8 @@ class ShowNode:
             with open(self.UNMARK_FILE, 'w') as tmp:
                 for item in self.TRANSACTION:
                     tmp.write(item+'\n')
+            with open(self.ROUTE_Y_FILE, 'w') as tmp:
+                tmp.write(source_addr+'\n') # (not safe PV)
 
     def receive(self):
         """

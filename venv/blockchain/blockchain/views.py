@@ -20,7 +20,7 @@ def active(func):
 @active
 def index(request):
     with connection.cursor() as cursor:
-        cursor.execute("select * from blockchain_node where user=%s", [request.session['user_id']])
+        cursor.execute("select user, host, port from blockchain_node where user=%s", [request.session['user_id']])
         addrs_list = cursor.fetchall()
         count_node = len(addrs_list)
     
@@ -243,13 +243,14 @@ def build_dir(keys, values):
         res[key] = values[i]
     return res
 
-def insert_into_node(request, addr_list):
+def insert_into_node(request, addr_list, route):
     user = request.session['user_id']
     with connection.cursor() as cursor:
         for addr in addr_list:
             host = addr[0]
             port = addr[1]
-            cursor.execute("insert into blockchain_node values(%s, %s, %s)", [user, host, int(port)])
+            key = host + ':' + port
+            cursor.execute("insert into blockchain_node values(%s, %s, %s, %s)", [user, host, int(port), route[key]])
         cursor.execute('commit')
 
 
@@ -279,10 +280,11 @@ def build(request):
             num_node = int(num_node)
     
         addr_list, route = gengraph.host_list(num_node, hosts_list)
-        # insert_into_node(request, addr_list)
+
         route_dir = build_dir(addr_list, route)
-        print('258:views addr_list %s' % addr_list)
-        print('259:views route_dir %s' % route_dir)
+        insert_into_node(request, addr_list, route_dir)
+        print('@var views addr_list %s' % addr_list)
+        print('@var views route_dir %s' % route_dir)
 
         for addr in addr_list:
             addr_key = addr[0] + ":" + addr[1]
@@ -302,6 +304,14 @@ def build(request):
         # 'route'       : route,
     }
     return render(request, "blockchain/simulation.html", content)
+
+@active
+def netdelete(request):
+    if request.session['user_id'] != None:
+        with connection.cursor() as cursor:
+            cursor.execute("delete from blockchain_node where user=%s",[request.session['user_id']])
+            cursor.execute("commit")
+    return JsonResponse({})
 
 def class_to_dict(obj):
     is_list = obj.__class__ == [].__class__
@@ -346,8 +356,39 @@ def format_blockchain(blockchain_tmp, hash_dict, id_tmp = 0):
         links.append(link_tmp)
     return nodes, links
 
+def format_route_table(route_table):
+    nodes = []
+    links = []
+    id_tmp = 0
+    for item in route_table:
+        item_tmp = {}
+        item_tmp['name'] = item[0] + ' ' + str(item[1])
+        item_tmp['value'] = item_tmp['name']
+        item_tmp['draggable'] = True
+        item_tmp['symbolSize'] = 40
+        item_tmp['category'] = 0
+        item_tmp['x'] = None
+        item_tmp['y'] = None
+
+        target_list = item[2].split('|')[:-1]
+        for target in target_list:
+            link_tmp = {}
+            link_tmp['id'] = id_tmp
+            link_tmp['source'] = item_tmp['name']
+            link_tmp['target'] = target
+            id_tmp += 1
+            links.append(link_tmp)
+        nodes.append(item_tmp)
+    return nodes, links
+
 @active
 def show(request):
+    # get route table
+    with connection.cursor() as cursor:
+        cursor.execute("select host, port, target from blockchain_node where user=%s",[request.session['user_id']])
+        route_table = cursor.fetchall()
+    route_nodes, route_links = format_route_table(route_table)
+
     # return all of the current block info
     port = 9999 # to do
     bc_ins = chain.Chain(port)
@@ -368,6 +409,10 @@ def show(request):
     data = {
         'nodes'       : nodes,
         'links'       : links,
+        'route_nodes' : route_nodes,
+        'route_links' : route_links,
+        'route_nodes_x' : route_nodes,
+        'route_links_x' : route_links,
         'last_id'     : last_index[0],
         'offset'      : last_index[1]
     }
@@ -422,16 +467,27 @@ def new_block(request):
         }
     return JsonResponse(data)  
 
-#debug
+@active
+def new_route_info(request):
+    node_x = [] 
+    node_y = []
+    with open('blockchain/bcinfo/9999/x', 'r') as x_out:
+        tmp = x_out.readline()
+        if len(tmp) > 0:
+            node_x.append(tmp)
+    with open('blockchain/bcinfo/9999/y', 'r') as y_out:
+        tmp = y_out.readline()
+        if len(tmp) > 0: 
+            node_y.append(tmp)
+    with open('blockchain/bcinfo/9999/x', 'w') as tmp: pass
+    with open('blockchain/bcinfo/9999/y', 'w') as tmp: pass
+    
+    data = {
+        'node_x'    : node_x,
+        'node_y'    : node_y,
+    }
+    return JsonResponse(data)
+
 @active
 def visual(request):
     return render(request, 'blockchain/visual.html')
-
-#debug
-def add_new_block(request):
-    bc = chain.Chain(9999)
-    import random
-    rand_num = random.randint(0, 65535);
-    bc.add_block('hello this is a new transaction ' + str(rand_num))
-
-    return JsonResponse({})

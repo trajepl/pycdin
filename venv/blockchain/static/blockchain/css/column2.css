@@ -1,12 +1,26 @@
-div {
-	float:left;
-	width:48%;
-	height:950px;
+.node-left {
+    width: 40%;
+    height: 470px;
 }
-div#split-line{
-	border:2px, dashed;
+#blockchain{
+    position:absolute;
+    width:58%;
+	height:950px;
+	left:42%;
+	top:10px;
+}
+#split-line-x{
 	border-radius:50%;
-	width:0.5%;
-	height:1000px;
+	width:40%;
+	height:2px;
+	background-color:#aaa;
+}
+#split-line-y{
+    position: absolute;
+	border-radius:50%;
+	width:2px;
+	height:950px;
+    top: 1px;
+    left: 40%;
 	background-color:#aaa;
 }

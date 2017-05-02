@@ -38,12 +38,13 @@ urlpatterns = [
 
     # build network
     url(r'^build$', views.build, name='build'),
+    url(r'^netdelete$', views.netdelete, name='netdelete'),
 
     # blockchain information visual
     url(r'^show$', views.show, name='show'),
     url(r'^new_block$', views.new_block, name='new_block'),
-    url(r'^visual$', views.visual, name='visual'), # debug
-    url(r'^addBlock$', views.add_new_block, name='addBlock'), # debug
+    url(r'^visual$', views.visual, name='visual'), 
+    url(r'^new_route_info$', views.new_route_info, name='new_route_info'), 
 
     # auth manage
     url(r'^admin/', admin.site.urls),

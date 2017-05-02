@@ -12,21 +12,18 @@
     {% load static %}
 	<title>blockchain</title>
 
-    <link rel="stylesheet" href="{% static '/blockchain/css/column2.css' %}">
-    <link rel="stylesheet" href="{% static '/blockchain/css/bootstrap.min.css' %}">
-	<link rel="stylesheet" href="{% static '/common/DataTables-1.10.8/css/jquery.dataTables.css' %}">
-	<link rel="stylesheet" href="{% static '/common/font-awesome-4.5.0/css/font-awesome.min.css' %}">
-    <link rel="stylesheet" href="{% static '/blockchain/css/style.css' %}">
+	<link rel="stylesheet" href="{% static '/blockchain/css/column2.css' %}">
 	<script type="text/javascript" src="{% static '/blockchain/plugins/jquery-1.11.2.js' %}"></script>
     <script type="text/javascript" src="{% static '/blockchain/plugins/echarts.min.js' %}"></script>
 </head>
 <body>
-	<div id="node"></div>
-	<div id="split-line"></div>
+	<div id="node-x" class="node-left"></div>
+	<div id="split-line-x"></div>
+	<div id="node-y" class="node-left"></div>
+	<div id="split-line-y"></div>
 	<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
     <div id="blockchain"></div>
     <script type="text/javascript" src="{% static '/blockchain/script/get_block.js' %}"></script>
-	<script type="text/javascript" src="{% static '/blockchain/script/get_node.js' %}"></script>
 </body>
 </html>
 
