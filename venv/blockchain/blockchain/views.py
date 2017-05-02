@@ -472,11 +472,11 @@ def new_route_info(request):
     node_x = [] 
     node_y = []
     with open('blockchain/bcinfo/9999/x', 'r') as x_out:
-        tmp = x_out.readline()
+        tmp = x_out.readline()[:-1]
         if len(tmp) > 0:
             node_x.append(tmp)
     with open('blockchain/bcinfo/9999/y', 'r') as y_out:
-        tmp = y_out.readline()
+        tmp = y_out.readline()[:-1]
         if len(tmp) > 0: 
             node_y.append(tmp)
     with open('blockchain/bcinfo/9999/x', 'w') as tmp: pass

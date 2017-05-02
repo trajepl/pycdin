@@ -84,9 +84,10 @@ class ShowNode:
             self.TRANSACTION.add(data_list[2]) # store data in memory(unmark)
             print('write %s into transaction' % data_list[2])
             with open(self.UNMARK_FILE, 'a') as transfer_io:
-                transfer_io.write(data_list[2] + '\n') # store data in disk(unmark)
+                transfer_io.write(data_list[2] + '\r\n') # store data in disk(unmark)
             with open(self.ROUTE_X_FILE, 'a') as transfer_io:
-                transfer_io.write(data_list[1] + '\n') # store data in disk(unmark) (not safe PV)
+                print('@opera write transaction')
+                transfer_io.write(data_list[1] + '\r\n') # store data in disk(unmark) (not safe PV)
 
     def valid_block(self, block):
         """
@@ -125,9 +126,10 @@ class ShowNode:
             self.blockchain.add_block(b_data_list)
             with open(self.UNMARK_FILE, 'w') as tmp:
                 for item in self.TRANSACTION:
-                    tmp.write(item+'\n')
-            with open(self.ROUTE_Y_FILE, 'w') as tmp:
-                tmp.write(source_addr+'\n') # (not safe PV)
+                    tmp.write(item+'\r\n')
+            with open(self.ROUTE_Y_FILE, 'a') as tmp:
+                print('@opera write block')
+                tmp.write(source_addr+'\r\n') # (not safe PV)
 
     def receive(self):
         """

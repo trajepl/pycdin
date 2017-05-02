@@ -200,6 +200,7 @@ $(document).ready(function() {
         bc.setOption(opt); 
         network_x.setOption(opt_route_x); 
         network_y.setOption(opt_route_y); 
+        console.log(graph_route_x);
 
         setInterval(function () {
             $.get('/new_block', {last_id : last_id, offset : offset}, 
